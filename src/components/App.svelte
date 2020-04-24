@@ -1,5 +1,5 @@
 <script>
-
+	import Card from '../components/Card.svelte';
 	let game, lobby, phases, corephases, actioncardphases, mounted = false, ws;
 	import { onMount } from 'svelte';
 	onMount(()=>{
@@ -2160,7 +2160,7 @@
 	{#if game.currentphase==-4}
 	<div class="playercountselector">
 		<p> Choose your Screen Name</p>	
-		<input type="text" bind:value={lobby.screenname}>
+		<input type="text" bind:value={lobby.screenname} on:keypress={(e)=>{if(e.key=='Enter') setplayername(lobby.screenname)} }>
 		<p on:click="{()=>setplayername(lobby.screenname)}" on:tap="{()=>setplayername(lobby.screenname)}">Finished</p>
 	</div>
 	{:else if game.currentphase==-3}

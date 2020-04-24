@@ -27,7 +27,7 @@ let generatenewgame = (state) => {
 	return state.game_id;
 };
 console.log('server started');
-let regPlyr = (socket,msg) => socket.join(msg.game_id);//{if (!clients[msg.game_id][msg.sender]) clients[msg.game_id][msg.sender] = socket;};
+let regPlyr = (socket,msg) => socket.join(msg.game_id);
 let setState = (msg) => games[msg.game_id] = { game: msg };
 let ws = io(server).on('connection', socket => {
 	console.log('connection made');
@@ -54,20 +54,16 @@ let ws = io(server).on('connection', socket => {
 				socket.emit('fetch',JSON.stringify(games));
 				break;
 			case 'enterexisting' : console.log(msg.header);
-				let game_id = msg.game_id;
-				let slot = msg.slot;
-				let player_name = msg.player_name;
-				console.log()
-				games[game_id].game.players[slot].name = player_name;
-				games[game_id].game.players[slot].available = false;
+				let game_id = msg.game_id,
+				    slot = msg.slot,
+				    player_name = msg.player_name,
+					plyr = games[game_id].game.players[slot];
+					plyr = {...plyr, name:player_name, available:false};
 				regPlyr(socket,msg);
-				//if (games[game_id].game.players.reduce((acc,cur)=>acc + (cur.available) ? 1 : 0,0) == 0) games[game_id].game.currentphase++;
 				socket.emit().emit('enter',JSON.stringify(games[game_id].game));
-				ws.to(game_id).emit('join',JSON.stringify({slot:slot,player:games[game_id].game.players[slot]}));
-				// Object.keys(clients[game_id]).forEach((client) => {
-				// 	clients[game_id][client].emit('enter',JSON.stringify(games[game_id].game));
-				// });
+				ws.to(game_id).emit('join',JSON.stringify({slot:slot,player:plyr}));
 				break;
 		}
 	});
 });
+export default server;
