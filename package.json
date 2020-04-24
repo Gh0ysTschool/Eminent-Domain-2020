@@ -1,6 +1,6 @@
 {
-  "name": "Eminent Domain",
-  "description": "Eminent Domain",
+  "name": "eminent-domain",
+  "description": "EminentDomain",
   "version": "0.0.1",
   "scripts": {
     "dev": "sapper dev",
