@@ -60,7 +60,7 @@ let ws = io(server).on('connection', socket => {
 					plyr = games[game_id].game.players[slot];
 					plyr = {...plyr, name:player_name, available:false};
 				regPlyr(socket,msg);
-				socket.emit().emit('enter',JSON.stringify(games[game_id].game));
+				socket.emit('enter',JSON.stringify(games[game_id].game));
 				ws.to(game_id).emit('join',JSON.stringify({slot:slot,player:plyr}));
 				break;
 		}
