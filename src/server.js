@@ -20,7 +20,7 @@ polka({server}) // You can also use Express
 	});
 
 let clients = [], games = [];
-let generatenewgame = (state) => {
+let generatenewgame = (state) => { console.log('new game generated: ', state.label);
 	state = {...state, game_id:games.length};
 	games = [...games,{game:state}];
 	clients = [...clients,{ }];
