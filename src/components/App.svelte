@@ -1783,19 +1783,19 @@
 			});
 			ws.on('enter',(msg)=>{ console.log('enter');
 				console.log(jprs(msg));
-				game = {...jprs(msg),phasse:game.phases,gamesequence:game.gamesequence,currentphase:game.currentphase};
+				game = {...jprs(msg),phasse:game.phases,gamesequence:game.gamesequence};
 				lobby = { ...lobby,
 					online:true,
 					player_id:Math.random().toString(36).replace(/[^a-z]+/g, '').substr(0, 10)
 				};
-				if (game.currentphase < 0 ) { game.currentphase = 0; }
+				console.log('available slots: ', game.players.reduce((acc,cur)=>acc + (cur.available) ? 1 : 0,0));
+				if (game.players.reduce((acc,cur)=>acc + (cur.available) ? 1 : 0,0) == 0) finish();
 			});
 			
 			ws.on('join',(msg)=>{ console.log('join');
 				msg = jprs(msg);
 				console.log(msg);
 				game.players[msg.slot] = msg.player;
-				if (game.players.reduce((acc,cur)=>acc + (cur.available) ? 1 : 0,0) == 0) finish();
 			});
 			ws.on('set',(msg)=>{ //console.log('set'); 
 				console.log(jprs(msg));
