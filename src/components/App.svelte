@@ -1,7 +1,7 @@
 <script>
 	import Card from '../components/Card.svelte';
 	let game, lobby, phases, corephases, actioncardphases, mounted = false, ws,
-	jstr = JSON.stringify, jprs = JSON.parse;
+	jstr = JSON.stringify, jprs = JSON.parse, log = console.log;
 	import { onMount } from 'svelte';
 	onMount(()=>{
 		////////////////////////////////////////////////////////////////////////////////
@@ -1669,7 +1669,7 @@
 			game.messagetoplayer.push(msg);
 		}
 		
-		console.log('sending state: ', send, 'currentphase: ', game.currentphase,'gamestate: ', game)
+		log('sending state: ', send, 'currentphase: ', game.currentphase,'gamestate: ', game)
 		if (send) sendstate();
 		game.nextphase();
 	};
@@ -1762,9 +1762,9 @@
 	let initSocket = (func) => {
 		let ping = () => { setTimeout( () => { ws.emit('message',jstr({header:'ping'})); ping(); },2000); };
 		ws = io();
-		ws.on('connect',()=>{ console.log('connected');
-			ws.on('id',(msg)=>{ console.log('id');
-				console.log(jprs(msg));
+		ws.on('connect',()=>{ log('connected');
+			ws.on('id',(msg)=>{ log('id');
+				log(jprs(msg));
 				game = {...game,
 					game_id:jprs(msg),
 					hader:'',
@@ -1774,15 +1774,15 @@
 					online:true};
 				registerws();
 			});
-			ws.on('fetch',(msg)=>{ console.log('fetch');
-				console.log(jprs(msg));
+			ws.on('fetch',(msg)=>{ log('fetch');
+				log(jprs(msg));
 				game.currentphase = -1;
 				lobby = {...lobby,
 					existinggames: jprs(msg).map(el=>el.game).filter(g=>g.players.filter(ll=>ll.available).length > 0),
 					online:true}
 			});
-			ws.on('enter',(msg)=>{ console.log('enter');
-				console.log(jprs(msg));
+			ws.on('enter',(msg)=>{ log('enter');
+				log(jprs(msg));
 				game = {...jprs(msg),phasse:game.phases,gamesequence:game.gamesequence};
 				lobby = { ...lobby,
 					online:true,
@@ -1790,15 +1790,15 @@
 				};
 			});
 			
-			ws.on('join',(msg)=>{ console.log('join');
+			ws.on('join',(msg)=>{ log('join');
 				msg = jprs(msg);
-				console.log(msg);
+				log(msg);
 				game.players[msg.slot] = msg.player;
-				console.log('available slots: ', game.players.reduce((acc,cur)=>acc + (cur.available) ? 1 : 0,0));
+				log('available slots: ', game.players.reduce((acc,cur)=>acc + (cur.available) ? 1 : 0,0));
 				if (game.players.reduce((acc,cur)=>acc + (cur.available) ? 1 : 0,0) == 0) finish();
 			});
-			ws.on('set',(msg)=>{ //console.log('set'); 
-				console.log(jprs(msg));
+			ws.on('set',(msg)=>{ //log('set'); 
+				log(jprs(msg));
 				game = {...jprs(msg),phasse:game.phases,gamesequence:game.gamesequence};
 			});
 			func();
