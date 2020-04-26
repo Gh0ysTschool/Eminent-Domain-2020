@@ -7,7 +7,7 @@ import http from 'http';
 
 const { PORT, NODE_ENV } = process.env;
 const dev = NODE_ENV === 'development';
-
+const jstr = JSON.stringify;
 let server = http.createServer();
 polka({server}) // You can also use Express
 	.use(
@@ -39,19 +39,19 @@ let ws = io(server).on('connection', socket => {
 				break;
 			case 'set' :  //console.log(msg.header);
 				setState(msg);
-				socket.to(msg.game_id).emit('set',JSON.stringify(msg));
+				socket.to(msg.game_id).emit('set',jstr(msg));
 				break;
 			case 'newgame' : console.log(msg.header);
 				socket.emit('id',generatenewgame(msg.game)); 
 				break;
 			case 'ping': //console.log(msg.header);
-				socket.emit(JSON.stringify({ header: "pong" }));
+				socket.emit(jstr({ header: "pong" }));
 				break;
 			case 'remove' :  console.log(msg.header);
 				games = games.splice(msg.game_id,1);
 				break;
 			case 'fetchexisting' :  console.log(msg.header);
-				socket.emit('fetch',JSON.stringify(games));
+				socket.emit('fetch',jstr(games));
 				break;
 			case 'enterexisting' : console.log(msg.header);
 				let game_id = msg.game_id,
@@ -60,8 +60,8 @@ let ws = io(server).on('connection', socket => {
 					plyr = games[game_id].game.players[slot];
 					plyr = {...plyr, name:player_name, available:false};
 				regPlyr(socket,msg);
-				socket.emit('enter',JSON.stringify(games[game_id].game));
-				ws.to(game_id).emit('join',JSON.stringify({slot:slot,player:plyr}));
+				socket.emit('enter',jstr(games[game_id].game));
+				ws.to(game_id).emit('join',jstr({slot:slot,player:plyr}));
 				break;
 		}
 	});

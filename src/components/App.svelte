@@ -1,6 +1,7 @@
 <script>
 	import Card from '../components/Card.svelte';
-	let game, lobby, phases, corephases, actioncardphases, mounted = false, ws;
+	let game, lobby, phases, corephases, actioncardphases, mounted = false, ws,
+	jstr = JSON.stringify, jprs = JSON.parse;
 	import { onMount } from 'svelte';
 	onMount(()=>{
 		////////////////////////////////////////////////////////////////////////////////
@@ -1753,17 +1754,17 @@
 	let newgame = (number_of_players) => {
 		lobby.online=true;
 		initgame(number_of_players);
-		initSocket(()=>ws.emit('message',JSON.stringify({'header':'newgame',game:game,sets:lobby.sets,number_of_players:game.players.length})));
+		initSocket(()=>ws.emit('message',jstr({'header':'newgame',game:game,sets:lobby.sets,number_of_players:game.players.length})));
 		
 	};
 	let initSocket = (func) => {
-		let ping = () => { setTimeout( () => { ws.emit('message',JSON.stringify({header:'ping'})); ping(); },2000); };
+		let ping = () => { setTimeout( () => { ws.emit('message',jstr({header:'ping'})); ping(); },2000); };
 		ws = io();
 		ws.on('connect',()=>{ console.log('connected');
 			ws.on('id',(msg)=>{ console.log('id');
-				console.log(JSON.parse(msg));
+				console.log(jprs(msg));
 				game = {...game,
-					game_id:JSON.parse(msg),
+					game_id:jprs(msg),
 					hader:'',
 					currentphase:game.currentphase+1};
 				lobby = {...lobby,
@@ -1772,15 +1773,15 @@
 				registerws();
 			});
 			ws.on('fetch',(msg)=>{ console.log('fetch');
-				console.log(JSON.parse(msg));
+				console.log(jprs(msg));
 				game.currentphase = -1;
 				lobby = {...lobby,
-					existinggames: JSON.parse(msg).map(el=>el.game).filter(g=>g.players.filter(ll=>ll.available).length > 0),
+					existinggames: jprs(msg).map(el=>el.game).filter(g=>g.players.filter(ll=>ll.available).length > 0),
 					online:true}
 			});
 			ws.on('enter',(msg)=>{ console.log('enter');
-				console.log(JSON.parse(msg));
-				game = {...JSON.parse(msg),phasse:game.phases,gamesequence:game.gamesequence,currentphase:game.currentphase};
+				console.log(jprs(msg));
+				game = {...jprs(msg),phasse:game.phases,gamesequence:game.gamesequence,currentphase:game.currentphase};
 				lobby = { ...lobby,
 					online:true,
 					player_id:Math.random().toString(36).replace(/[^a-z]+/g, '').substr(0, 10)
@@ -1789,27 +1790,27 @@
 			});
 			
 			ws.on('join',(msg)=>{ console.log('join');
-				msg = JSON.parse(msg);
+				msg = jprs(msg);
 				console.log(msg);
 				game.players[msg.slot] = msg.player;
 				if (game.players.reduce((acc,cur)=>acc + (cur.available) ? 1 : 0,0) == 0) finish();
 			});
 			ws.on('set',(msg)=>{ //console.log('set'); 
-				console.log(JSON.parse(msg));
-				game = {...JSON.parse(msg),phasse:game.phases,gamesequence:game.gamesequence};
+				console.log(jprs(msg));
+				game = {...jprs(msg),phasse:game.phases,gamesequence:game.gamesequence};
 			});
 			func();
 			ping();
 		})
 	}
-	let fetchexistinggames = () => initSocket(()=> ws.emit('message',JSON.stringify({'header':'fetchexisting'})));
+	let fetchexistinggames = () => initSocket(()=> ws.emit('message',jstr({'header':'fetchexisting'})));
 	let enterexistinggame = (g) => {
 		let slot = g.players.reduce((acc,cur,i)=>(cur.available) ? i : acc,0);
 		if (!lobby.init) initgame(g.number_of_players); 
-		ws.emit('message',JSON.stringify({'header':'enterexisting',game_id:g.game_id,player_name:lobby.screename,slot:slot}));
+		ws.emit('message',jstr({'header':'enterexisting',game_id:g.game_id,player_name:lobby.screename,slot:slot}));
 	};
-	let sendstate = () => ws.emit('message',JSON.stringify({...game,'header':'set','sender':lobby.player_id}));
-	let registerws = () => ws.emit('message',JSON.stringify({...game,'header':'register','sender':lobby.player_id}));
+	let sendstate = () => ws.emit('message',jstr({...game,'header':'set','sender':lobby.player_id}));
+	let registerws = () => ws.emit('message',jstr({...game,'header':'register','sender':lobby.player_id}));
 	let initgame = (number_of_players) => {
 		game.label = lobby.screenname;
 		lobby.init=true;
