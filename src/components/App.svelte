@@ -1788,14 +1788,14 @@
 					online:true,
 					player_id:Math.random().toString(36).replace(/[^a-z]+/g, '').substr(0, 10)
 				};
-				console.log('available slots: ', game.players.reduce((acc,cur)=>acc + (cur.available) ? 1 : 0,0));
-				if (game.players.reduce((acc,cur)=>acc + (cur.available) ? 1 : 0,0) == 0) finish();
 			});
 			
 			ws.on('join',(msg)=>{ console.log('join');
 				msg = jprs(msg);
 				console.log(msg);
 				game.players[msg.slot] = msg.player;
+				console.log('available slots: ', game.players.reduce((acc,cur)=>acc + (cur.available) ? 1 : 0,0));
+				if (game.players.reduce((acc,cur)=>acc + (cur.available) ? 1 : 0,0) == 0) finish();
 			});
 			ws.on('set',(msg)=>{ //console.log('set'); 
 				console.log(jprs(msg));
