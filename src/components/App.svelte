@@ -1668,6 +1668,8 @@
 			game.nextphase = nextphase;
 			game.messagetoplayer.push(msg);
 		}
+		
+		console.log('sending state: ', send, 'currentphase: ', game.currentphase,'gamestate: ', game)
 		if (send) sendstate();
 		game.nextphase();
 	};
