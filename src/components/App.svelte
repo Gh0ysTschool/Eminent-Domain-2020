@@ -1761,6 +1761,7 @@
 		ws = io();
 		ws.on('connect',()=>{ console.log('connected');
 			ws.on('id',(msg)=>{ console.log('id');
+				consle.log(JSON.parse(msg));
 				game = {...game,
 					game_id:JSON.parse(msg),
 					hader:'',
@@ -1771,12 +1772,14 @@
 				registerws();
 			});
 			ws.on('fetch',(msg)=>{ console.log('fetch');
+				consle.log(JSON.parse(msg));
 				game.currentphase = -1;
 				lobby = {...lobby,
 					existinggames: JSON.parse(msg).map(el=>el.game).filter(g=>g.players.filter(ll=>ll.available).length > 0),
 					online:true}
 			});
 			ws.on('enter',(msg)=>{ console.log('enter');
+				consle.log(JSON.parse(msg));
 				game = {...JSON.parse(msg),phasse:game.phases,gamesequence:game.gamesequence,currentphase:game.currentphase};
 				lobby = { ...lobby,
 					online:true,
@@ -1787,11 +1790,12 @@
 			
 			ws.on('join',(msg)=>{ console.log('join');
 				msg = JSON.parse(msg);
+				consle.log(msg);
 				game.players[msg.slot] = msg.player;
-				console.log(game.players);
 				if (game.players.reduce((acc,cur)=>acc + (cur.available) ? 1 : 0,0) == 0) finish();
 			});
 			ws.on('set',(msg)=>{ //console.log('set'); 
+				consle.log(JSON.parse(msg));
 				game = {...JSON.parse(msg),phasse:game.phases,gamesequence:game.gamesequence};
 			});
 			func();
