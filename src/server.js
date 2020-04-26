@@ -56,10 +56,10 @@ let ws = io(server).on('connection', socket => {
 			case 'enterexisting' : console.log(msg.header);
 				let game_id = msg.game_id,
 					game = games[game_id].game,
-					slot = msg.slot;
+					slot = msg.slot,
+					player_name = msg.player_name;
 				if(slot == -1) break;
-				let player_name = msg.player_name,
-					game.players[slot] = {...game.players[slot], name:player_name, available:false};
+				game.players[slot] = {...game.players[slot], name:player_name, available:false};
 				regPlyr(socket,msg);
 				if (game.currentphase < 0) game.currentphase = 0;
 				socket.emit('enter',jstr(game));
