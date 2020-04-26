@@ -1807,7 +1807,7 @@
 	}
 	let fetchexistinggames = () => initSocket(()=> ws.emit('message',jstr({'header':'fetchexisting'})));
 	let enterexistinggame = (g) => {
-		let slot = g.players.reduce((acc,cur,i)=>(cur.available) ? i : acc,0);
+		let slot = g.players.findIndex(p=>p.available);
 		if (!lobby.init) initgame(g.number_of_players); 
 		ws.emit('message',jstr({'header':'enterexisting',game_id:g.game_id,player_name:lobby.screename,slot:slot}));
 	};
