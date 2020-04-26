@@ -55,14 +55,15 @@ let ws = io(server).on('connection', socket => {
 				break;
 			case 'enterexisting' : console.log(msg.header);
 				let game_id = msg.game_id,
+					game = games[game_id].game,
 					slot = msg.slot;
 				if(slot == -1) break;
 				let player_name = msg.player_name,
-					plyr = games[game_id].game.players[slot];
-					games[game_id].game.players[slot] = {...plyr, name:player_name, available:false};
+					plyr = game.players[slot];
+					game.players[slot] = {...plyr, name:player_name, available:false};
 				regPlyr(socket,msg);
-				if (games[game_id].game.currentphase < 0) games[game_id].game.currentphase = 0;
-				socket.emit('enter',jstr(games[game_id].game));
+				if (game.currentphase < 0) game.currentphase = 0;
+				socket.emit('enter',jstr(game));
 				ws.to(game_id).emit('join',jstr({slot:slot,player:plyr}));
 				break;
 		}
