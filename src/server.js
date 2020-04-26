@@ -59,12 +59,11 @@ let ws = io(server).on('connection', socket => {
 					slot = msg.slot;
 				if(slot == -1) break;
 				let player_name = msg.player_name,
-					plyr = game.players[slot];
-					game.players[slot] = {...plyr, name:player_name, available:false};
+					game.players[slot] = {...game.players[slot], name:player_name, available:false};
 				regPlyr(socket,msg);
 				if (game.currentphase < 0) game.currentphase = 0;
 				socket.emit('enter',jstr(game));
-				ws.to(game_id).emit('join',jstr({slot:slot,player:plyr}));
+				ws.to(game_id).emit('join',jstr({slot:slot,player:game.players[slot]}));
 				break;
 		}
 	});
