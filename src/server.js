@@ -6,7 +6,7 @@ import io from 'socket.io';
 import http from 'http';
 
 const { PORT, NODE_ENV } = process.env;
-const dev = false;//NODE_ENV === 'development';
+const dev = NODE_ENV === 'development';
 const jstr = JSON.stringify;
 let server = http.createServer();
 polka({server}) // You can also use Express
