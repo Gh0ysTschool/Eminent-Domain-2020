@@ -1641,7 +1641,7 @@
 	};
 	let explore_planet = (player)=>{
 		let planet = game.planet_deck.pop();
-		player.limbo = [...player.limbo,{'finDest':'planetdeck',...planet}];
+		player.limbo = [...player.limbo,{...planet,'finDest':'planetdeck'}];
 		game.options = [...game.options,planet];
 	};
 	let catalog_planet = (player) => {
@@ -1972,10 +1972,10 @@
 	}
 
 	.pass {
-		background-repeat: no-repeat;
+		border-radius:1vh;
 		height: 50px;
 		min-width: 200px;
-		background-image: url("/images/EMbutton200.png");
+		background:rgb(80,80,80);
 		align-self: center;
 		text-align: center;
 	}
@@ -1987,15 +1987,11 @@
 	}
 	.selectable{
 		border: solid rgb(114, 210, 223);
-		border-width: 4px;
-		border-left-width: 2px;
-		border-right-width: 2px;
+		border-width: 1px;
 	}
 	.selected{
 		border: solid rgb(50, 190, 132);
-		border-width: 4px;
-		border-left-width: 2px;
-		border-right-width: 2px;
+		border-width: 1px;
 	}
 	.flex {
 		display: flex;
@@ -2210,20 +2206,30 @@
 						<!-- played cards-->
 						<div id="playedcards" class="flex zone playedcards" >
 							{#if game.displayinfo.showoptiontoskip}
+								<!-- <img src='./images/o.svg' alt='o' style="margin-right:auto" class="selectable pass" on:click="{()=>choose([{name:'Skip'}])}" on:tap="{()=>choose([{name:'Skip'}])}"/> -->
+								
 								<div style="margin-right:auto" class="selectable pass" on:click="{()=>choose([{name:'Skip'}])}" on:tap="{()=>choose([{name:'Skip'}])}">[Choose None]</div>
 							{:else}
+							<!-- <img src='./images/o.svg' alt='o' style="margin-right:auto" class="bordered pass" /> -->
 								<div style="margin-right:auto" class="bordered pass">[____]</div>
 							{/if}
 							{#each game.players[game.acting_player_index].limbo as card (card.id)}
 								<Card mini={true} on:click={()=>unchoose(card)} on:tap={()=>unchoose(card)} {card}/>
 							{/each}
 							{#if game.passp }
+								<!-- <img src='./images/x.svg' alt='x' style="margin-left:auto" class="selectable pass" on:click="{()=>pass_priority()}"on:tap="{()=>pass_priority()}"/> -->
 								<div style="margin-left:auto" class="selectable pass" on:click="{()=>pass_priority()}"on:tap="{()=>pass_priority()}">[Pass to <br> Next Player]</div>
 							{:else if game.passt}
+								<!-- <img src='./images/x.svg' alt='x' style="margin-left:auto" class="selectable pass" on:click="{()=>pass_turn()}" on:tap="{()=>pass_turn()}"/> -->
+								
 								<div style="margin-left:auto" class="selectable pass" on:click="{()=>pass_turn()}" on:tap="{()=>pass_turn()}">[End Turn]</div>
 							{:else if game.displayinfo.allowformultipleselections && game.choices.length>0}
+								<!-- <img src='./images/x.svg' alt='x' style="margin-left:auto" class="selectable pass" on:click="{()=>choose(game[game.displayinfo.choicelabel])}" on:tap="{()=>choose(game[game.displayinfo.choicelabel])}"/> -->
+								
 								<div style="margin-left:auto" class="selectable pass" on:click="{()=>choose(game[game.displayinfo.choicelabel])}" on:tap="{()=>choose(game[game.displayinfo.choicelabel])}">[Choose Selected]</div>
 							{:else}
+								<!-- <img src='./images/x.svg' alt='x' style="margin-left:auto" class="bordered pass" /> -->
+								
 								<div class="bordered pass" >[______]</div>
 							{/if}
 						</div>
@@ -2247,7 +2253,7 @@
 					{#each game.options as option (option.name)}
 						{#if option.type !== undefined}
 							<PlanetCard planet={option} selectable={game.displayinfo.selectionzone=='options'} on:click={()=>choosewrapper(option,'options')} on:tap={()=>choosewrapper(option,'options')}/>
-							<PlanetCard planet={{...option,settled:false}} selectable={game.displayinfo.selectionzone=='options'} on:click={()=>choosewrapper(option,'options')} on:tap={()=>choosewrapper(option,'options')}/>
+							<PlanetCard planet={{...option,settled:true}} selectable={game.displayinfo.selectionzone=='options'} on:click={()=>choosewrapper(option,'options')} on:tap={()=>choosewrapper(option,'options')}/>
 						{:else}
 							<div class="pass {(game.displayinfo.selectionzone=='options') ? ( (option.selected) ? 'selected' : 'selectable' ): 'bordered'}" on:click="{()=>choosewrapper(option,'options')}" on:tap="{()=>choosewrapper(option,'options')}">
 								{option.name}

@@ -73,7 +73,7 @@ let key = {advanced:'adv', fertile:'fer', metallic:'met',}[planet.type];
             <div class="title"> 
                 <IconBar {...planet.icons}/>  
                 <span style="margin-left:15vh">
-                    <Icon type='influence' size='sm' influence={planet.influence}/>
+                    <Icon type='influence' size='sm' influence={planet.influence_vbalue}/>
                 </span>
             </div>
 
@@ -87,11 +87,11 @@ let key = {advanced:'adv', fertile:'fer', metallic:'met',}[planet.type];
                 {/each}
             </div>
         {:else}
-            <div class="title"> Surveying Alien World  </div>
-            <div class="logo">
+            {#if !mini}<div class="title"> Surveying Alien World  </div>{/if}
+            <div class="logo" >
                 <img src="./images/col.svg" alt="{planet.name}">
             </div>
-            <div style="display:inline-block">
+            <div style={"display:inline-block " + (mini) ? 'position:absolute;width:90%;top:40%': ''}>
                 <span style="float:left">
                     {planet.settle_cost}
                     <Icon type="colonize" size="sm"/>

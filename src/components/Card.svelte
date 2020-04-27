@@ -1,6 +1,7 @@
 <script>
 	import Icon from '../components/Icon.svelte';
 	import Tech from '../components/Tech.svelte';
+	import PlanetCard from '../components/PlanetCard.svelte';
 	import {beforeUpdate} from 'svelte';
 	export let card, selectable = false, pilecount ='', mini = false;
 	let label,key,bg,logoBg;
@@ -47,7 +48,17 @@
 		--war-color:rgb(255, 98, 98);
 		--sur-color:rgb(143, 255, 143);
 		--pro-trd-clr:linear-gradient(to right, var(--pro-color), var(--pro-color) 50%, var(--trd-color) 50%, var(--trd-color) 100%);
-    }
+	}
+	
+	.selectable{
+		border: solid rgb(114, 210, 223);
+		border-width: 1px;
+	}
+	
+	.selected{
+		border: solid rgb(50, 190, 132);
+		border-width: 1px;
+	}
 	.mdc-card {
 		position: relative;
 		overflow:hidden;
@@ -126,7 +137,9 @@
 		bottom:3%;
 	}
 </style>
-{#if !['survey','warfare','colonize','research','producetrade','politics'].includes(card.type)} 
+{#if (card.type=='planet'||card.type=='advanced'||card.type=='metallic'||card.type=='fertile')}
+	<PlanetCard planet={card} {selectable} {mini}/>		
+{:else if !['survey','warfare','colonize','research','producetrade','politics'].includes(card.type)} 
 	<Tech {card} {selectable} {mini}/>
 {:else}
 	<div class="mdc-card {(selectable) ? (card.selected) ? 'selected' : 'selectable' : 'bordered'} {(mini) ? 'mini' : '' }" style={bg} on:click on:touch on:touchstart on:touchend on:tap on:touchmove>
