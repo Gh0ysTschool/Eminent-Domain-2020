@@ -1,0 +1,19 @@
+{
+  "bundler": "rollup",
+  "shimport": "1.0.1",
+  "assets": {
+    "main": "client.a2448f37.js"
+  },
+  "css": {
+    "main": null,
+    "chunks": {
+      "index.svelte": [
+        "index.8dd466bb.css",
+        "PlanetCard.6375c0df.css"
+      ],
+      "demo.svelte": [
+        "PlanetCard.6375c0df.css"
+      ]
+    }
+  }
+}
