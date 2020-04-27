@@ -1,15 +1,28 @@
 <script>
 	import Card from '../components/Card.svelte';
+	import Tech from '../components/Tech.svelte';
+	import PlanetCard from '../components/PlanetCard.svelte';
+
 	let game, lobby, phases, corephases, actioncardphases, mounted = false, ws,
 	jstr = JSON.stringify, jprs = JSON.parse, log = console.log;
-	import { onMount } from 'svelte';
+	import { onMount,afterUpdate, beforeUpdate } from 'svelte';
+	beforeUpdate(()=>{
+	})
+	afterUpdate(()=>{
+		console.log(getActPlyr());
+		// console.log('hand',game.players[0].hand.reduce((acc,cur) => acc+cur.name,''));
+		// let card = game.players[0].hand[0];
+		// console.log('removing ',card.name);
+		// handToLimbo(game.players[0],card);
+		// console.log('hand',game.players[0].hand.reduce((acc,cur) => acc+cur.name,''));
+	})
 	onMount(()=>{
 		////////////////////////////////////////////////////////////////////////////////
 		corephases = [
 			/*colonize:*/ {
 				actn:[
 					genActionPhase( "Choose between Settling or Colonizing a Planet", ["colonize"],
-						wrappedOffer(["Colonize","Settle Coloniies"]),
+						wrappedOffer(["Colonize","Settle Colonies"]),
 					),
 					genActionPhase( "Choose an Unsettled Planet to Settle", ["colonize"],
 						() => offer(false,false,["unsettled_planets"],"subchoices",finish),
@@ -1127,7 +1140,7 @@
 			game.nonce = nonce;
 			mounted = true;
 	
-	
+		
 	
 	})
 	///////////////////////////////////////////////////////////////////////////////
@@ -1435,43 +1448,43 @@
 	let genplanetdeck = () => { 
 		game.planet_deck = knuthshuffle([
 			//fertile planets
-			genplanet('MISHBURR ITO-A').fertile().settle(5).conquer(4).zone('green')              .influence(3).icon('produce')   ,
-			genplanet('STYKU').fertile().settle(4).conquer(5).zone('blue')               .influence(3).icon('colonize')  ,
-			genplanet('ANGUS DUFFY').fertile().settle(3).conquer(6).zone('green').zone('blue') .influence(3)                   ,
-			genplanet('GERDLAND').fertile().settle(4).conquer(5).zone('blue')               .influence(3).icon('produce')   ,
-			genplanet('MIK-MIK').fertile().settle(5).conquer(4).zone('green')              .influence(3).icon('colonize')  ,
-			genplanet('NELOS IV').fertile().settle(5).conquer(4).zone('green')              .influence(2)      .handsize(1) ,
-			genplanet('SPIELBANY VI').fertile().settle(4).conquer(5).zone('blue')               .influence(2)      .handsize(1) ,
-			genplanet('NEW TEXAS').fertile().settle(3).conquer(6).zone('green').zone('blue') .influence(2).icon('colonize')  ,
-			genplanet('ARTIGAS GNS-111').fertile().settle(3).conquer(6).zone('green').zone('blue') .influence(2).icon('produce')   ,
+			genplanet('MISHBURR ITO-A').fertile().settle(5).conquer(4).zone('food')              .influence(3).icon('produce')   ,
+			genplanet('STYKU').fertile().settle(4).conquer(5).zone('water')               .influence(3).icon('colonize')  ,
+			genplanet('ANGUS DUFFY').fertile().settle(3).conquer(6).zone('food').zone('water') .influence(3)                   ,
+			genplanet('GERDLAND').fertile().settle(4).conquer(5).zone('water')               .influence(3).icon('produce')   ,
+			genplanet('MIK-MIK').fertile().settle(5).conquer(4).zone('food')              .influence(3).icon('colonize')  ,
+			genplanet('NELOS IV').fertile().settle(5).conquer(4).zone('food')              .influence(2)      .handsize(1) ,
+			genplanet('SPIELBANY VI').fertile().settle(4).conquer(5).zone('water')               .influence(2)      .handsize(1) ,
+			genplanet('NEW TEXAS').fertile().settle(3).conquer(6).zone('food').zone('water') .influence(2).icon('colonize')  ,
+			genplanet('ARTIGAS GNS-111').fertile().settle(3).conquer(6).zone('food').zone('water') .influence(2).icon('produce')   ,
 			//advanced planets
-			genplanet('HANOJ - T').advanced().settle(5).conquer(4).influence(3).zone('purple').icon('trade'),
-			genplanet('OKNOW').advanced().settle(4).conquer(5).influence(2).zone('purple')                              .handsize(1),
+			genplanet('HANOJ - T').advanced().settle(5).conquer(4).influence(3).zone('silicon').icon('trade'),
+			genplanet('OKNOW').advanced().settle(4).conquer(5).influence(2).zone('silicon')                              .handsize(1),
 			genplanet('SROD AVEIN N2').advanced().settle(3).conquer(6).influence(4)                             .icon('research'),
-			genplanet("RAL GAI'GAW").advanced().settle(4).conquer(5).influence(3).zone('purple').icon('trade'),
-			genplanet('ECHO ROSE').advanced().settle(5).conquer(4).influence(3).zone('purple')              .icon('research'),
-			genplanet('SHOLMICAN').advanced().settle(3).conquer(6).influence(4).zone('purple'),
+			genplanet("RAL GAI'GAW").advanced().settle(4).conquer(5).influence(3).zone('silicon').icon('trade'),
+			genplanet('ECHO ROSE').advanced().settle(5).conquer(4).influence(3).zone('silicon')              .icon('research'),
+			genplanet('SHOLMICAN').advanced().settle(3).conquer(6).influence(4).zone('silicon'),
 			genplanet('ZEPHAN').advanced().settle(3).conquer(6).influence(4)               .icon('trade'),
-			genplanet('SIMA-07C').advanced().settle(5).conquer(4).influence(2).zone('purple')                              .handsize(1),
-			genplanet('LYTTLE').advanced().settle(4).conquer(5).influence(3).zone('purple')              .icon('research'),
+			genplanet('SIMA-07C').advanced().settle(5).conquer(4).influence(2).zone('silicon')                              .handsize(1),
+			genplanet('LYTTLE').advanced().settle(4).conquer(5).influence(3).zone('silicon')              .icon('research'),
 			//mettalic planets
 			genplanet('KYRIE & JUNO').metallic().settle(3).conquer(6).influence(4)            .icon('survey'),
 			genplanet('MARGHANNAH PRIME').metallic().settle(4).conquer(5).influence(3)                           .handsize(1),
-			genplanet('TANKAHSHIN').metallic().settle(4).conquer(5).influence(3).zone('red').icon('warfare'),
-			genplanet('VOSON').metallic().settle(4).conquer(5).influence(3).zone('red').icon('survey'),
-			genplanet('PINK SONAR').metallic().settle(5).conquer(4).influence(3).zone('red').icon('survey'),
+			genplanet('TANKAHSHIN').metallic().settle(4).conquer(5).influence(3).zone('metallic').icon('warfare'),
+			genplanet('VOSON').metallic().settle(4).conquer(5).influence(3).zone('metallic').icon('survey'),
+			genplanet('PINK SONAR').metallic().settle(5).conquer(4).influence(3).zone('metallic').icon('survey'),
 			genplanet("OVERLORD BETZEL'S DOMAIN").metallic().settle(3).conquer(6).influence(4)            .icon('warfare'),
-			genplanet('8910 SPIELEN').metallic().settle(4).conquer(5).influence(2).zone('red')               .handsize(1),
+			genplanet('8910 SPIELEN').metallic().settle(4).conquer(5).influence(2).zone('metallic')               .handsize(1),
 			genplanet('IDROYOS').metallic().settle(3).conquer(6).influence(5),
-			genplanet('ERKAM-W').metallic().settle(5).conquer(4).influence(3).zone('red').icon('warfare')
+			genplanet('ERKAM-W').metallic().settle(5).conquer(4).influence(3).zone('metallic').icon('warfare')
 		]);
 		game.stacks.startingplanets = knuthshuffle([
-			genplanet('MESIA SEDNIM').fertile().settle(2).conquer(2).influence(2).zone('blue'),
-			genplanet('DRAWDE').fertile().settle(2).conquer(2).influence(2).zone('green'),
-			genplanet('LIAGIBA').advanced().settle(2).conquer(2).influence(2).zone('purple'),
-			genplanet('POMERENE').advanced().settle(2).conquer(2).influence(2).zone('purple'),
-			genplanet('CHRISPEN').metallic().settle(2).conquer(2).influence(2).zone('red'),
-			genplanet('PIEDRA SECA').metallic().settle(2).conquer(2).influence(2).zone('red'),
+			genplanet('MESIA SEDNIM').fertile().settle(2).conquer(2).influence(2).zone('water'),
+			genplanet('DRAWDE').fertile().settle(2).conquer(2).influence(2).zone('food'),
+			genplanet('LIAGIBA').advanced().settle(2).conquer(2).influence(2).zone('silicon'),
+			genplanet('POMERENE').advanced().settle(2).conquer(2).influence(2).zone('silicon'),
+			genplanet('CHRISPEN').metallic().settle(2).conquer(2).influence(2).zone('metallic'),
+			genplanet('PIEDRA SECA').metallic().settle(2).conquer(2).influence(2).zone('metallic'),
 		])   
 	};
 	let cleanup = () => {
@@ -1669,7 +1682,6 @@
 			game.messagetoplayer.push(msg);
 		}
 		
-		log('sending state: ', send, 'currentphase: ', game.currentphase,'gamestate: ', game)
 		if (send) sendstate();
 		game.nextphase();
 	};
@@ -1811,7 +1823,7 @@
 		if (!lobby.init) initgame(g.number_of_players); 
 		ws.emit('message',jstr({'header':'enterexisting',game_id:g.game_id,player_name:lobby.screename,slot:slot}));
 	};
-	let sendstate = () => ws.emit('message',jstr({...game,'header':'set','sender':lobby.player_id}));
+	let sendstate = () => lobby.online && ws.emit('message',jstr({...game,'header':'set','sender':lobby.player_id}));
 	let registerws = () => ws.emit('message',jstr({...game,'header':'register','sender':lobby.player_id}));
 	let initgame = (number_of_players) => {
 		game.label = lobby.screenname;
@@ -1886,7 +1898,7 @@
 		lobby.online=false;
 		game.currentphase = 0;
 		initgame(2);
-		finish();
+		finish();;
 	};
 	let setplayername = (name) => {
 		lobby.screename = name;
@@ -1904,85 +1916,61 @@
 		elem.msRequestFullscreen();
 		}
 	};
+	
 </script>
 
 <style>
-	
-	.hidden {
-		display: none;
+	.stars {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	width: 2px;
+	height: 2px;
+	box-shadow: 686px 466px #d4d4d4, 630px 365px whitesmoke, 1140px 224px #ededed, 1048px 344px white, 857px 70px #e3e3e3, 651px 400px #dbdbdb, 431px -107px #d1d1d1, -144px 151px #d4d4d4, 139px 402px #f7f7f7, 1090px -160px #c9c9c9, 1489px 75px #d6d6d6, -404px -113px #e0e0e0, -94px -358px #fafafa, 692px -211px #fcfcfc, 1414px 403px #e3e3e3, 445px -469px whitesmoke, 437px -173px #cfcfcf, -1474px 79px #e8e8e8, 286px -370px #e3e3e3, -389px -74px #f2f2f2, -386px 230px #cccccc, 1289px -415px #f0f0f0, 566px 6px #d1d1d1, 645px 53px #f7f7f7, 90px -232px #d4d4d4, 868px 214px #dedede, 633px -126px #c4c4c4, -1432px -324px #c4c4c4, 486px -11px #f0f0f0, 1484px 338px #f2f2f2, 1496px -127px #e8e8e8, 587px -446px #f0f0f0, 695px -142px #e6e6e6, 1145px 14px #f0f0f0, 339px -36px #d4d4d4, 193px -337px #ebebeb, -1364px -453px #ebebeb, 287px -252px whitesmoke, 888px 94px #fafafa, 485px 148px #c4c4c4, -619px -26px #d6d6d6, -1016px -251px #c9c9c9, -369px -387px #e3e3e3, -87px -433px #f2f2f2, -128px 162px #ededed, 285px 468px #cfcfcf, -715px -447px #cfcfcf, 1124px -404px #d9d9d9, 1209px 248px #e6e6e6, 831px -459px #f7f7f7, -1320px 390px #fafafa, -416px 189px #ebebeb, -1445px -2px #d6d6d6, -765px -181px #e3e3e3, -217px -471px #ededed, 1283px 76px #e6e6e6, -718px -474px #e0e0e0, 198px -71px #dbdbdb, 1009px -200px #f2f2f2, -1418px 200px #d4d4d4, 1354px -349px #dedede, -934px 243px #cfcfcf, -116px 465px #e8e8e8, -314px 446px #c9c9c9, -338px -311px #dbdbdb, 307px 92px #fcfcfc, -1414px 412px #c4c4c4, -1296px 472px #fcfcfc, -787px -76px #e0e0e0, -398px 466px #dbdbdb, -532px 144px #d6d6d6, -1449px -143px #c7c7c7, 755px -101px #d9d9d9, 222px 355px #dbdbdb, -1145px -318px #d4d4d4, 355px -463px whitesmoke, -807px -336px white, -398px -471px #c4c4c4, -935px 152px #d4d4d4, 1082px 166px #d1d1d1, 456px -159px #dedede, -818px 270px #dbdbdb, 63px 270px white, 60px 3px #c9c9c9, 560px 173px whitesmoke, 1217px -292px #ebebeb, -913px -419px #c2c2c2, -790px -386px #e6e6e6, 988px -472px #cfcfcf, -318px -476px #f2f2f2, -179px -282px #f7f7f7, 1079px -27px #fafafa, -1179px -466px #cccccc, 322px -193px #c7c7c7, -545px -269px #cccccc, -1188px 318px #e0e0e0, 19px 227px #d9d9d9, -1141px -437px #d9d9d9, 475px 86px #cfcfcf, 93px 208px #fcfcfc, -734px -222px #fcfcfc, -487px 61px #ebebeb, 1136px 107px #d6d6d6, 211px -291px #ebebeb, -1003px 91px #c2c2c2, 1379px 462px #e8e8e8, -85px -412px #e8e8e8, 549px -129px #cfcfcf, -269px -428px #c4c4c4, -442px 281px #c2c2c2, -116px -186px #c2c2c2, -1092px 252px #e8e8e8, 598px -47px #c4c4c4, 599px 430px #e0e0e0, 946px 225px #e3e3e3, 994px -441px #c9c9c9, -265px 4px #d4d4d4, 1376px -454px #d9d9d9, -963px -224px white, -202px -223px #cfcfcf, 1005px -201px #e3e3e3, -659px -302px #f2f2f2, -325px 397px #c2c2c2, -44px -391px #c2c2c2, 228px -223px #dedede, -603px 221px #dedede, -147px -397px #c9c9c9, 75px -394px #d9d9d9, -308px 239px #f0f0f0, -807px -74px #dbdbdb, -857px -235px #f0f0f0, 1055px 465px #d9d9d9, 307px 252px #cccccc, -1249px 25px #d1d1d1, 669px 304px #dbdbdb, -738px -341px #f0f0f0, -1063px -20px #ebebeb, -1476px -271px #e8e8e8, -20px -415px #cccccc, -1010px 338px #d4d4d4, -166px -3px #cfcfcf, 129px 7px #e0e0e0, 618px 10px #ededed, -1481px -273px #f2f2f2, -965px -193px #c4c4c4, 1271px 431px #f2f2f2, 991px -315px #c4c4c4, -918px 270px #d1d1d1, -1172px -216px #ebebeb, 1483px 449px #dedede, 728px 104px #e6e6e6, 144px -366px white, -656px 42px #f2f2f2, -527px -371px #f7f7f7, 76px 231px #d1d1d1, 1073px -183px #ededed, 520px 120px #e3e3e3, -163px 16px #cccccc, -1367px 82px #d6d6d6, -484px -131px whitesmoke, 279px -435px #e8e8e8, 446px -149px #e0e0e0, -735px 379px #ededed, -794px -442px #f2f2f2, 1314px 452px #c2c2c2, -1146px -65px #d6d6d6, -6px -390px #fafafa, 524px -183px #cccccc, 641px -148px #e3e3e3, 827px -341px #dedede, 150px 150px #d4d4d4, -1206px 417px #cccccc, -86px -451px #d1d1d1, 1144px -22px #e0e0e0, -336px -144px #c2c2c2, 436px 173px #c2c2c2, 506px -318px #fafafa, 167px 90px #cccccc, 128px 220px #ebebeb, -344px 424px #c2c2c2, 609px 393px #fcfcfc, 298px 211px #c2c2c2, -595px -339px #cccccc, 1184px -338px #c7c7c7, -1149px 118px #dbdbdb, -891px 14px #ebebeb, 107px -419px #d9d9d9, -233px -330px #f0f0f0, -1457px 443px #dedede, -217px 86px #d4d4d4, 1142px 83px #c4c4c4, 623px 309px #f7f7f7, 503px -216px #e8e8e8, -989px -176px #ebebeb, -269px 291px #e3e3e3, 483px 22px #fcfcfc, 1290px 302px #cccccc, -1016px -273px #c7c7c7, -1426px -65px #e3e3e3, 162px -341px #c7c7c7, -103px 335px #dbdbdb, 944px -441px #e3e3e3, 1151px 163px #e8e8e8, -1110px -42px #cfcfcf, -901px 15px #c4c4c4, 179px 60px #dbdbdb, 695px -320px #e3e3e3, -923px -348px white, 1102px 373px #e0e0e0, -823px 154px whitesmoke, -695px 424px #f2f2f2, 1421px -336px #d9d9d9, -947px -471px #fcfcfc, 1267px -410px #fafafa, 140px -470px #d1d1d1, -931px -476px #d4d4d4, 650px -354px #c7c7c7, -838px -426px #dedede, 810px 339px #d1d1d1, -1405px 343px #d9d9d9, 183px -17px #e3e3e3, -1275px -237px #f2f2f2, -666px -74px white, -1155px 61px #e6e6e6, -1478px 48px #ebebeb, -146px 288px #f0f0f0, 936px -277px #e3e3e3, 770px 409px #d6d6d6, 935px 443px #c4c4c4, -616px -408px #f0f0f0, -97px -268px #c9c9c9, -6px -292px white, 10px 262px #ebebeb, 791px 438px #f2f2f2, 470px -34px #d6d6d6, 679px -298px #d6d6d6, 1271px -303px whitesmoke, 480px 166px #e0e0e0, -502px -241px #d9d9d9, 599px -435px #d1d1d1, 1317px 176px #c2c2c2, 1124px -126px #d6d6d6, 17px -358px #c2c2c2, 1364px 232px #cccccc, -1176px -248px #c2c2c2, 1178px -175px white, 84px -98px #c9c9c9, -494px 305px #cccccc, -464px 476px whitesmoke, 269px -250px #e3e3e3, -381px 59px #e3e3e3, 805px -247px #e8e8e8, 103px -60px #d6d6d6, -1368px -210px #f0f0f0, 304px 39px whitesmoke, 1189px 457px #d9d9d9, -1171px 447px #ebebeb, -1447px -25px #f2f2f2, -507px -347px #f7f7f7, 835px -473px #cfcfcf, 544px 133px #cccccc, -254px 36px #c9c9c9, -134px 4px #d9d9d9, -727px -88px #ededed, 200px 92px #f7f7f7, -1372px -93px #e6e6e6, -16px -17px #d1d1d1, 707px -152px #cfcfcf, -442px 311px #c4c4c4, -77px 112px #ebebeb, -1488px 226px #c2c2c2, -1151px 431px white, 1180px -95px #d6d6d6, -836px -263px #f2f2f2, -35px 327px #fafafa, 1242px -238px #e8e8e8, -679px -273px #c4c4c4, 296px 401px #cfcfcf, -724px 70px #f0f0f0, -1350px -171px #f0f0f0, 53px 113px whitesmoke, 1112px -207px #fafafa, 276px -437px #d9d9d9, 513px 429px whitesmoke, 30px 343px #cccccc, 60px 86px #dbdbdb, 654px -157px #f2f2f2, 970px 299px #cfcfcf, -1247px -264px #ebebeb, -697px 301px #c7c7c7, -205px 50px #ebebeb, -332px 192px #fcfcfc, 1077px -374px #c9c9c9, -856px -449px #e6e6e6, 313px 389px #fcfcfc, 262px -378px #c7c7c7, -801px -206px #c7c7c7, -330px -8px #f7f7f7, 284px 3px #cccccc, -1264px 478px #cccccc, 1458px -160px whitesmoke, -906px -225px #dedede, 503px -98px #c7c7c7, 93px -84px #dedede, 1201px -347px #f7f7f7, 580px 265px #e0e0e0, 1495px -157px whitesmoke, -100px -255px #e8e8e8, 214px 462px #ebebeb, 20px -185px #ededed, 1134px -381px #ededed, -1263px 281px #ebebeb, -748px 113px #ebebeb, -1371px -137px whitesmoke, 13px -13px #cfcfcf, 1116px 101px #e6e6e6, -139px -410px #c7c7c7, 258px -83px #c9c9c9, -1336px 351px #e6e6e6, 502px 1px #e0e0e0, 268px -269px #c2c2c2, -549px 50px #c9c9c9, 1191px -363px #c7c7c7, -117px -271px #f2f2f2, 287px 288px #dbdbdb, -78px -95px #fafafa, -567px 228px #cfcfcf, -911px -285px #c2c2c2, 1242px -257px #fafafa, 1304px 336px #ededed, -66px -117px #c4c4c4, -560px 198px #c9c9c9, -1229px -245px whitesmoke, -980px 144px #d1d1d1, -982px -453px #ebebeb, -1056px 272px #d4d4d4, -30px -247px #e8e8e8, -741px 456px #d6d6d6, -1467px 397px #f2f2f2, -1341px 134px #dbdbdb, 1226px -408px #cfcfcf, 995px 345px #c7c7c7, 564px 167px #e6e6e6, -333px 33px #f7f7f7, -1198px 433px #ebebeb, 1308px 356px #e3e3e3, 997px 286px #d1d1d1, 734px 213px #ebebeb, -1256px -173px whitesmoke, 847px -200px #cfcfcf, -751px 429px #dedede;
+	animation: fly 3s linear infinite;
+	transform-style: preserve-3d;
 	}
-	.hand img {
-		height: 20vh;
-		width: 14vh;
-		margin-right: 5px;
-		margin-left: 5px;
+	.stars:before, .stars:after {
+	content: "";
+	position: absolute;
+	width: inherit;
+	height: inherit;
+	box-shadow: inherit;
 	}
-	.settle_cost{
-		position: relative;
-		bottom: -webkit-calc(88% - 26px);
-		right: 10%;
-		text-align: right;
-		font-size: 120%;
+	.stars:before {
+	transform: translateZ(-300px);
+	animation: fade1 3s linear infinite;
 	}
-	.conquer_cost{
-		position: relative;
-		bottom: 88%;
-		left: 10%;
-		text-align: left;
-		font-size: 120%;
+	.stars:after {
+	transform: translateZ(-600px);
+	animation: fade2 3s linear infinite;
 	}
-	.planetfrontinfo{
-		position: absolute;
-		top: 0px;
+
+	@keyframes fly {
+	from {
+		transform: translateZ(0px);
 	}
-	.unsettled_costs {
-		position: absolute;
-		top: 0px;
+	to {
+		transform: translateZ(300px);
 	}
-	.mini_settle_cost{
-		position: relative;
-		text-align: right;
-		font-size: 80%;
 	}
-	.mini_conquer_cost{
-		position: relative;
-		text-align: left;
-		font-size: 80%;
+	@keyframes fade1 {
+	from {
+		opacity: .5;
 	}
-	.hosted_colonies{
-		position: relative;
-		bottom: 38%;
-		text-align: center;
-		font-size: 120%;
+	to {
+		opacity: 1;
 	}
-	.unsettled > img{
-		width: auto;
-		height: 100%;
 	}
-	.unsettled {
-		height: 95%;
+	@keyframes fade2 {
+	from {
+		opacity: 0;
 	}
-	.mini_unsettled > img{
-		width: auto;
-		height: 100%;
+	to {
+		opacity: .5;
 	}
-	.mini_unsettled {
-		height: 100%;
 	}
-	.planetfront {
-		font-weight: bolder;
-		font-size: 50%;
-		height: 100%;
-		background-repeat: no-repeat;
-	}
-	.planetfront > div > img {
-		flex-direction: column;
-		height: 2em;
-		background-repeat: no-repeat;
-	}
-	.planetfront > img {
-		height: 100%;
-	}
+
 	.pass {
 		background-repeat: no-repeat;
 		height: 50px;
@@ -1990,11 +1978,6 @@
 		background-image: url("/images/EMbutton200.png");
 		align-self: center;
 		text-align: center;
-	}
-	.pilecount{
-		position:relative;
-		font-size: 200%;
-		bottom:20%;
 	}
 	.messagetoplayer{
 		text-align: center;
@@ -2013,12 +1996,6 @@
 		border-width: 4px;
 		border-left-width: 2px;
 		border-right-width: 2px;
-	}
-	.centerrow div {
-		max-width: 14vw;
-		min-width: 14vw;
-		margin-left: 5px;
-		margin-right: 5px;
 	}
 	.flex {
 		display: flex;
@@ -2040,10 +2017,11 @@
 		min-width: 100vw;
 		min-height:100vh;
 		min-width: 100vw;
-		background-image: url("/images/embackground.png");
+		background: radial-gradient(rgb(82,48,103), rgb(10,10,10));
 		background-repeat: no-repeat;
 		background-size: cover;
 	}
+	
 	.options, .talloptions{
 		background-image: url("/images/embackground.png");
 		background-repeat: no-repeat;
@@ -2076,10 +2054,6 @@
 		overflow-x: scroll;
 		overflow-y: hidden;
 	}
-	.hand > img{
-		position:relative;
-		
-	}
 	.deck{
 		max-width: 5%;
 		margin-right:auto;
@@ -2106,22 +2080,12 @@
 	.researchrow > div{
 		height:95%;
 	}
-	.researchrow > div >img{
-		width: auto;
-		height: 100%;
-	}
-	.centerrow > div > img{
-		height:100%;
-	}
 	.playedcards{
 		height:20%;
 		overflow-x:scroll;
 		position:absolute;
 		top:55%;
 		justify-content: flex-start;
-	}
-	.minicard{
-		height:100%;
 	}
 	.bordered{
 		border: solid #000;
@@ -2199,6 +2163,7 @@
 			{game.winner} WON!!!!
 		</div>
 	{:else}
+		<div class='stars'></div>
 		<div id="screen" style="height:100%;width:100%;" class="flex">
 			{#each game.players as player}
 				{#if game.players[game.acting_player_index]!==undefined && ((lobby.screenname==player.name && lobby.online) || (game.players[game.acting_player_index].id==player.id && !lobby.online)) }
@@ -2215,94 +2180,30 @@
 							<!-- <div style="width:100%; text-align: center;" class="bordered"> Remaining Influence throughout the Galaxy {game.influence.length}</div> -->
 						</div>
 						<!-- stacks / planets toggle -->
-						<div on:click="{()=>toggle_center_or_planets()}" on:tap="{()=>toggle_center_or_planets()}">
+						<div on:click={()=>toggle_center_or_planets()} on:tap={()=>toggle_center_or_planets()}>
 							show {(game.displayinfo.center_or_planets) ? "planets" : "center row"}
 						</div>
 						<!-- stacks -->
 						{#if game.displayinfo.selectionzone=='research'}
 							<div class="zone researchrow">
-								{#each game.research_deck as card}
-								<div>
-									<img src="{card.imgurl}" on:click="{()=>choosewrapper(card,'research')}" on:tap="{()=>choosewrapper(card,'research')}" class="{(game.displayinfo.selectionzone=='research') ? ( (card.selected) ? 'selected' : 'selectable' ): 'bordered'}" alt="{card.name}">
-								</div>
+								{#each game.research_deck as card (card.id)}
+									<Card on:click="{()=>choosewrapper(card,'research')}" on:tap="{()=>choosewrapper(card,'research')}" selectable={(game.displayinfo.selectionzone=='research')} {card}/>
 								{/each}
 							</div>
 						{:else if game.displayinfo.center_or_planets}
 							<div class="flex zone centerrow">
-								{#if game.displayinfo.selectionzone=='rolecards'}
-									{#each game.stacks.rolecards as card}
-									<div>
-										<img on:click="{()=>choosewrapper(card,'rolecards')}" on:tap="{()=>choosewrapper(card,'rolecards')}" on:touchmove="{(event)=>move(event, '/images/'+card.type+'.png','rolecards')}" on:touchstart="{(event)=>drag(event,card,'rolecards')}" on:touchend="{(event)=>drop(event,'rolecards')}" class="{(game.displayinfo.selectionzone=='rolecards') ? ( (card.selected) ? 'selected' : 'selectable' ): 'bordered'}" src="/images/{card.type}.png" alt="{card.name}">
-										<div class="pilecount"> {game.stacks.pilecount[card.type]}</div>
-									</div>
-									{/each}
-								{:else}
-									{#each game.stacks.rolecards as card}
-									<div>
-										<img class="{(game.displayinfo.selectionzone=='rolecards') ? ( (card.selected) ? 'selected' : 'selectable' ): 'bordered'}" src="/images/{card.type}.png" alt="{card.name}">
-										<div class="pilecount"> {game.stacks.pilecount[card.type]}</div>
-									</div>
-									{/each}
-								{/if}
+								{#each game.stacks.rolecards as card (card.name)}
+									<Card {card} selectable={game.displayinfo.selectionzone=='rolecards'} pilecount="{game.stacks.pilecount[card.type]}" on:click="{()=>choosewrapper(card,'rolecards')}" on:tap="{()=>choosewrapper(card,'rolecards')}" on:touchmove="{(event)=>move(event, '/images/'+card.type+'.png','rolecards')}" on:touchstart="{(event)=>drag(event,card,'rolecards')}" on:touchend="{(event)=>drop(event,'rolecards')}"/>
+								{/each}
 							</div>
 						{/if}
 						{#if !game.displayinfo.center_or_planets}
 							<div class="flex zone centerrow">
-								{#each player.unsettled_planets as planet}
-									<div on:click="{()=>choosewrapper(planet,'unsettled_planets')}" on:tap="{()=>choosewrapper(planet,'unsettled_planets')}" class=" unsettled {(game.displayinfo.selectionzone=='unsettled_planets') ? ( (planet.selected) ? 'selected' : 'selectable' ): 'bordered'}">
-										<img src="/images/{planet.type}back.png" alt='{planet.settle_cost} {planet.type} {planet.conquer_cost}'>
-										<div class="settle_cost"> {planet.settle_cost}</div>
-										<div class="conquer_cost"> {planet.conquer_cost}</div>
-										<div class="hosted_colonies"> {planet.hosted_colonies.length} colonies</div>
-									</div>
+								{#each player.unsettled_planets as planet (planet.id)}
+									<PlanetCard planet={planet} on:click={()=>choosewrapper(planet,'unsettled_planets')} on:tap={()=>choosewrapper(planet,'unsettled_planets')}/>
 								{/each}
-								{#each [...player.settled_planets, ...player.conquered_planets] as planet}
-								<!-- if actingplayer.activerole or activeaction == trade and has weapons emporium as a permanent-->
-								<!-- display psudeo planets that host a fighter resource that can be traded -->
-									<div on:click="{()=>choosewrapper(planet,'settled_&_conquered_planets')}" on:tap="{()=>choosewrapper(planet,'settled_&_conquered_planets')}" class="{(game.displayinfo.selectionzone=='settled_&_conquered_planets') ? ( (planet.selected) ? 'selected' : 'selectable' ): 'bordered'}">
-										<div  class="planetfront" style="font-size: 160%" >
-											<img src="/images/{planet.type}100.png" alt='{planet.settle_cost} {planet.type} {planet.conquer_cost}'>	
-											<!-- style="background-image: url('/images/{option.type}.png')" -->
-											<!-- icons -->
-											<div class="planetfrontinfo">
-												{#if planet.icons.survey > 0}
-													<img src="/images/surveyicon.png"  alt="survey"><br>
-												{/if}
-												{#if planet.icons.warfare > 0}
-													<img src="/images/warfareicon.png"  alt="warfare"><br>
-												{/if}
-												{#if planet.icons.colonize > 0}
-													<img src="/images/colonizeicon.png"  alt="colonize"><br>
-												{/if}
-												{#if planet.icons.research > 0}
-													<img src="/images/researchicon.png"  alt="research"><br>
-												{/if}
-												{#if planet.icons.trade > 0}
-													<img src="/images/tradeicon.png"  alt="trade"><br>
-												{/if}
-												{#if planet.icons.produce > 0}
-													<img src="/images/produceicon.png"  alt="produce"><br>
-												{/if}
-												<!-- production zones -->
-												{#each planet.production_zones as zone}
-													<img src="/images/{zone.type}productionzoneicon.png"  alt="{zone.type} zone"><br>
-												{/each}
-												<!-- hand size mods -->
-												{#if planet.handsize_modifier > 0}
-													<img src="/images/handsizeicon.png"  alt="produce"><br>
-												{/if}
-												<!-- influence value -->
-												<div>
-													{planet.influence_value}
-												</div>
-												<img src="/images/influenceicon.png"  alt="influence">
-												<!-- name  -->
-												<div>
-													{planet.name}
-												</div>
-											</div>
-										</div>
-									</div>
+								{#each [...player.settled_planets, ...player.conquered_planets] as planet (planet.id)}
+									<PlanetCard planet={planet} selected={game.displayinfo.selectionzone=='settled_&_conquered_planets'} on:click={()=>choosewrapper(planet,'settled_&_conquered_planets')} on:tap={()=>choosewrapper(planet,'settled_&_conquered_planets')} />
 								{/each}
 							</div>
 						{/if}
@@ -2313,17 +2214,8 @@
 							{:else}
 								<div style="margin-right:auto" class="bordered pass">[____]</div>
 							{/if}
-							{#each game.players[game.acting_player_index].limbo as card}
-									{#if card.research_cost !== undefined}
-									<div class="bordered minicard">
-										<img class="minicard" src="{card.imgurl}"  alt="{card.name}" on:click="{()=>unchoose(card)}" on:tap="{()=>unchoose(card)}">
-									</div>
-									{:else if card.type != "advanced" && card.type != "fertile" && card.type != "metallic"}
-										<div class="bordered minicard">
-											<img class="minicard" src="/images/{card.type}.png"  alt="{card.name}" on:click="{()=>unchoose(card)}" on:tap="{()=>unchoose(card)}">
-										</div>
-									{/if}
-								<!-- {/if} -->
+							{#each game.players[game.acting_player_index].limbo as card (card.id)}
+								<Card mini={true} on:click={()=>unchoose(card)} on:tap={()=>unchoose(card)} {card}/>
 							{/each}
 							{#if game.passp }
 								<div style="margin-left:auto" class="selectable pass" on:click="{()=>pass_priority()}"on:tap="{()=>pass_priority()}">[Pass to <br> Next Player]</div>
@@ -2340,20 +2232,8 @@
 						<div class="flex zone ownedcards">
 							<div class='bordered deck'> cards remaining in deck: {player.deck.length}</div>
 							<div class='hand'>
-								{#each player.hand as card}
-									{#if game.displayinfo.selectionzone=='hand'}
-										{#if card.research_cost !== undefined}
-											<img src="{card.imgurl}"  alt="{card.name}" on:touchstart="{(event)=>drag(event, card,'hand')}" on:touchend="{(event)=>drop(event,'hand')}" on:touchmove="{(event)=>move(event, card.imgurl,'hand')}" on:click="{()=>choosewrapper(card,'hand')}" on:tap="{()=>choosewrapper(card,'hand')}" class="cutcard {(game.displayinfo.selectionzone=='hand') ? ( (card.selected) ? 'hidden' : 'selectable' ): 'bordered'}">
-										{:else}
-											<img src="/images/{card.type}.png" alt="{card.name}" on:touchstart="{drag((event)=>event,card,'hand')}" on:touchend="{(event)=>drop(event,'hand')}" on:click="{()=>choosewrapper(card,'hand')}" on:touchmove="{(event)=>move(event, '/images/'+card.type+'.png','hand')}" on:tap="{()=>choosewrapper(card,'hand')}" class="cutcard {(game.displayinfo.selectionzone=='hand') ? ( (card.selected) ? 'hidden' : 'selectable' ): 'bordered'}">
-										{/if}
-									{:else}
-										{#if card.research_cost !== undefined}
-											<img src="{card.imgurl}" alt="{card.name}" class="cutcard {(game.displayinfo.selectionzone=='hand') ? ( (card.selected) ? 'selected' : 'selectable' ): 'bordered'}">
-										{:else}
-											<img src="/images/{card.type}.png" alt="{card.name}" class="cutcard {(game.displayinfo.selectionzone=='hand') ? ( (card.selected) ? 'selected' : 'selectable' ): 'bordered'}">
-										{/if}
-									{/if}	
+								{#each player.hand as card (card.id)}
+									<Card card={card} mini={true} selectable={game.displayinfo.selectionzone=='hand'} on:touchstart={(event)=>drag(event, card,'hand')} on:touchend={(event)=>drop(event,'hand')} on:touchmove={(event)=>move(event, card.imgurl,'hand')} on:click={()=>{log(card);choosewrapper(card,'hand');}} on:tap={()=>choosewrapper(card,'hand')} />
 								{/each}
 							</div>
 							<div class="bordered discard"> cards in discard pile: {player.discard.length}</div>
@@ -2364,64 +2244,10 @@
 			<!-- game.options -->
 			{#if game.displayinfo.selectionzone=='options'}
 				<div class="{( game.options[0] !== undefined && game.options[0].type !== undefined) ? 'talloptions' : 'options'}">
-					{#each game.options as option}
+					{#each game.options as option (option.name)}
 						{#if option.type !== undefined}
-							
-						<div class="bordered flex {(game.displayinfo.selectionzone=='options') ? ( (option.selected) ? 'selected' : 'selectable' ): 'bordered'}" on:click="{()=>choosewrapper(option,'options')}" on:tap="{()=>choosewrapper(option,'options')}" >
-							<div  class="planetfront" >
-								<img src="/images/{option.type}100.png" alt='{option.settle_cost} {option.type} {option.conquer_cost}'>	
-								<!-- style="background-image: url('/images/{option.type}.png')" -->
-								<!-- icons -->
-								<div class="planetfrontinfo">
-									{#if option.icons.survey > 0}
-										<img src="/images/surveyicon.png"  alt="survey"><br>
-									{/if}
-									{#if option.icons.warfare > 0}
-										<img src="/images/warfareicon.png"  alt="warfare"><br>
-									{/if}
-									{#if option.icons.colonize > 0}
-										<img src="/images/colonizeicon.png"  alt="colonize"><br>
-									{/if}
-									{#if option.icons.research > 0}
-										<img src="/images/researchicon.png"  alt="research"><br>
-									{/if}
-									{#if option.icons.trade > 0}
-										<img src="/images/tradeicon.png"  alt="trade"><br>
-									{/if}
-									{#if option.icons.produce > 0}
-										<img src="/images/produceicon.png"  alt="produce"><br>
-									{/if}
-									<!-- production zones -->
-									{#each option.production_zones as zone}
-										<img src="/images/{zone.type}productionzoneicon.png"  alt="{zone.type} zone"><br>
-									{/each}
-									<!-- hand size mods -->
-									{#if option.handsize_modifier > 0}
-										<img src="/images/handsizeicon.png"  alt="produce"><br>
-									{/if}
-									<!-- influence value -->
-									<div>
-										{option.influence_value}
-									</div>
-									<img src="/images/influenceicon.png"  alt="influence">
-									<!-- name  -->
-									<div>
-										{option.name}
-									</div>
-								</div>
-							</div>
-							<div>
-								<!-- colonize cost -->
-								<!-- conquer cost -->
-								<div class="mini_unsettled">
-									<img src="/images/{option.type}back100.png" alt='{option.settle_cost} {option.type} {option.conquer_cost}'>
-									<div class="unsettled_costs">
-										<span class="mini_settle_cost"> {option.settle_cost}</span>
-										<span class="mini_conquer_cost"> {option.conquer_cost}</span>
-									</div>
-								</div>
-							</div>
-						</div>
+							<PlanetCard planet={option} selectable={game.displayinfo.selectionzone=='options'} on:click={()=>choosewrapper(option,'options')} on:tap={()=>choosewrapper(option,'options')}/>
+							<PlanetCard planet={{...option,settled:false}} selectable={game.displayinfo.selectionzone=='options'} on:click={()=>choosewrapper(option,'options')} on:tap={()=>choosewrapper(option,'options')}/>
 						{:else}
 							<div class="pass {(game.displayinfo.selectionzone=='options') ? ( (option.selected) ? 'selected' : 'selectable' ): 'bordered'}" on:click="{()=>choosewrapper(option,'options')}" on:tap="{()=>choosewrapper(option,'options')}">
 								{option.name}
