@@ -1920,6 +1920,25 @@
 </script>
 
 <style>
+	.show {
+		    position: absolute;
+			top: 20vh;
+			height: 25vh;
+			width: 25vh;
+			background: rgb(80,80,80);
+			border-radius: 0% 50% 50% 0%;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			color:rgb(49, 158, 177);
+			z-index:2;
+	}
+	.player {
+		border-radius: 5vh;
+		background: rgb(80,80,80);
+		display: flex;
+		align-items: center;	
+	}
 	.stars {
 	position: absolute;
 	top: 50%;
@@ -1976,12 +1995,16 @@
 		height: 50px;
 		min-width: 200px;
 		background:rgb(80,80,80);
-		align-self: center;
-		text-align: center;
+		justify-content: center;
+		align-items: center;
+		display: flex;
 	}
 	.messagetoplayer{
 		text-align: center;
-		width:100%;
+		background: rgb(80,80,80);
+		border-radius: 5vh;
+		width: 60%;
+		margin-left: 20%;
 		position: absolute;
 		top:75%;
 	}
@@ -2050,13 +2073,24 @@
 		overflow-x: scroll;
 		overflow-y: hidden;
 	}
+	.deck, .discard {
+		border-radius: 3vh;
+		min-width: 19vh;
+		max-width: 19vh;
+		background-repeat:no-repeat;
+		text-align:center;
+		justify-content: center;
+		align-items: center;
+		display: flex;
+		font-size: 6vh;
+	}
 	.deck{
-		max-width: 5%;
 		margin-right:auto;
+		background-image:url('../images/card-draw.svg');
 	}
 	.discard{
-		max-width: 5%;
 		margin-left:auto;
+		background-image:url('../images/card-burn.svg');
 	}
 	.zone {
 		width: 100%;
@@ -2167,16 +2201,16 @@
 						<div id='dragged'></div>
 						<div class="playerinfo bordered">
 							{#each game.players as p}
-								<div style="width:{100/game.number_of_players}%" class="flex {(game.players[game.acting_player_index] !== undefined && p.name == game.players[game.acting_player_index].name) ? 'selectable' : 'bordered'}">
-									<div style="width:33%; text-align: center;" class="bordered"> Military Might {p.starfighters.small}</div>
-									<div style="width:33%; text-align: center;" class="bordered"> Galactic Influence {p.influence.length}</div>
-									<div style="width:33%; text-align: center;" class="bordered"> {p.name}</div>
+								<div style="width:{100/game.number_of_players}%" class="flex player {(game.players[game.acting_player_index] !== undefined && p.name == game.players[game.acting_player_index].name) ? 'selectable' : 'bordered'}">
+									<div style="width:33%; text-align: center;"> Military Might {p.starfighters.small}</div>
+									<div style="width:33%; text-align: center;"> Galactic Influence {p.influence.length}</div>
+									<div style="width:33%; text-align: center;"> {p.name}</div>
 								</div>
 							{/each}
 							<!-- <div style="width:100%; text-align: center;" class="bordered"> Remaining Influence throughout the Galaxy {game.influence.length}</div> -->
 						</div>
 						<!-- stacks / planets toggle -->
-						<div on:click={()=>toggle_center_or_planets()} on:tap={()=>toggle_center_or_planets()}>
+						<div class="show" on:click={()=>toggle_center_or_planets()} on:tap={()=>toggle_center_or_planets()}>
 							show {(game.displayinfo.center_or_planets) ? "planets" : "center row"}
 						</div>
 						<!-- stacks -->
@@ -2236,13 +2270,13 @@
 						<div class="messagetoplayer bordered">{game.messagetoplayer[game.messagetoplayer.length-1]}</div>
 						<!-- hand -->
 						<div class="flex zone ownedcards">
-							<div class='bordered deck'> cards remaining in deck: {player.deck.length}</div>
+							<div class='bordered deck'>{player.deck.length}</div>
 							<div class='hand'>
 								{#each player.hand as card (card.id)}
 									<Card card={card} mini={true} selectable={game.displayinfo.selectionzone=='hand'} on:touchstart={(event)=>drag(event, card,'hand')} on:touchend={(event)=>drop(event,'hand')} on:touchmove={(event)=>move(event, card.imgurl,'hand')} on:click={()=>{log(card);choosewrapper(card,'hand');}} on:tap={()=>choosewrapper(card,'hand')} />
 								{/each}
 							</div>
-							<div class="bordered discard"> cards in discard pile: {player.discard.length}</div>
+							<div class="bordered discard">{player.discard.length}</div>
 						</div>
 					</div>
 				{/if}

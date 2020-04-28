@@ -64,7 +64,7 @@
 		overflow:hidden;
 		padding:1vh;
 		height: 30vh; 
-		width: 21vh; 
+		width: 19vh; 
 		margin-left:1vh;
 		margin-right:1vh;
     }
