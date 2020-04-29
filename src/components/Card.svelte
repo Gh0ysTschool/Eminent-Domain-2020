@@ -2,7 +2,6 @@
 	import Icon from '../components/Icon.svelte';
 	import Tech from '../components/Tech.svelte';
 	import PlanetCard from '../components/PlanetCard.svelte';
-	import {beforeUpdate} from 'svelte';
 	export let card, selectable = false, pilecount ='', mini = false;
 	let label,key,bg,logoBg;
     $:{ label = card.type.charAt(0).toUpperCase() + card.type.slice(1),
@@ -23,7 +22,7 @@
 			"role":"+1 colony per <icon>colonize<icon> \n Leader: May settle 1 planet instead"}},
 		"producetrade": {"desc":{
 			"action":"Produce 1 resource OR Trade 1 resource",
-			"role":"Produce 1 resource per <icon>produce<icon> OR Trade 1 resource per <icon>trade<icon> \n Leader: +<icon>produce<icon> OR <icon>trade<icon>"}},
+			"role":"Produce 1 resource per <icon>produce<icon> OR Trade 1 resource per <icon>trade<icon> \n Leader: +<icon>produce<icon> OR +<icon>trade<icon>"}},
 		"research": {"desc":{
 			"action":"Remove up to 3 cards in your and from the game",
 			"role":"Aquire 1 technology card after satisfying <icon>research<icon> costs and planet requirements \n Leader: +<icon>research<icon>"}},
@@ -31,11 +30,6 @@
 			"action":"Remove tis card from the game. Place any 1 role card from the stacks into your hand",
 			"role":""}},
 		}
-
-
-	beforeUpdate(()=>{
-		card.type = card.type+'';
-	})
 	</script>
 <style>
 	@import url(https://unpkg.com/@smui/card@latest/bare.css);

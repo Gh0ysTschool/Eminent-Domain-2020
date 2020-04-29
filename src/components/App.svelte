@@ -693,7 +693,8 @@
 				selectionzone: "",
 				dragged: null,
 				showoptiontoskip: false,
-				allowformultipleselections: false,
+				alwMulti: false,
+				center_or_research: true,
 				center_or_planets: true, //true = center, false = planets
 				choicelabel: "choices"
 			},
@@ -1101,7 +1102,7 @@
 					"Pass the device to the Next Player": () => {
 						game.displayinfo.selectionzone = "";
 						game.displayinfo.showoptiontoskip = false;
-						game.displayinfo.allowformultipleselections = false;
+						game.displayinfo.alwMulti = false;
 						game.passp = false;
 						game.passt = true;
 					}
@@ -1180,7 +1181,7 @@
             displayPlanets = () => game.displayinfo.center_or_planets = false,
             displayCenter = () => game.displayinfo.center_or_planets = true,
             clearChoices = () => game[game.displayinfo.choicelabel] = [],
-            setDisplayInfo = (zone,multiple,skippable,label) => game.displayinfo = {...game.displayinfo,...{selectionzone:zone,allowformultipleselections:multiple,showoptiontoskip:skippable,choicelabel:label}},
+            setDisplayInfo = (zone,multiple,skippable,label) => game.displayinfo = {...game.displayinfo,...{selectionzone:zone,alwMulti:multiple,showoptiontoskip:skippable,choicelabel:label}},
             getAllCards = (plyr) => [...plyr.deck,...plyr.discard, ...plyr.limbo, ...plyr.hand],
             isPlanet = (p) => p.type=='planet' || p.type=='fertile' || p.type=='metallic' || p.type=='advanced',
             chkForPerm = (perm) => getActPlyr().permanents.filter( (el)=>el.type==perm ).length != 0,
@@ -1190,7 +1191,7 @@
 	
 	let choosewrapper = (c,zone) => {
 		if ((game.displayinfo.selectionzone == zone) && offlineOrIsClientTurn()){
-			(game.displayinfo.allowformultipleselections) ? multiplechoose(c) : choose([c]);
+			(game.displayinfo.alwMulti) ? multiplechoose(c) : choose([c]);
 		}
 	};
 	let multiplechoose = (choice) => {
@@ -1228,7 +1229,7 @@
 	};
 	let offer = (
 		skippable /*option to skip | sets game.displayinfo.showoptiontoskip=boolean */,
-		multiple /*allows multiple choices | sets game.displayinfo.allowformultipleselections=boolean */, 
+		multiple /*allows multiple choices | sets game.displayinfo.alwMulti=boolean */, 
 		[field_label, choices] /* available cards to choose from | game.displayinfo.selectionzone={'hand|discard|options|planets|research|rolecards'}, sets choices=array if specified*/, 
 		choice_label /* label for where the choice is stored | set with game[label]=*/,
 		callback /*callback that handles the choice or finishes the phase*/, 
@@ -1612,7 +1613,7 @@
 	//offer_to_boost present_as_choice, choose, boost
 	let offer_to_boost = (player) => {
 		game.displayinfo.selectionzone = 'hand';
-		game.displayinfo.allowformultipleselections = true;
+		game.displayinfo.alwMulti = true;
 		game.displayinfo.showoptiontoskip = true;
 		present_as_choice(player.hand);
 		document.addEventListener('choicemade',singleCllBck(()=>{},'choicemade',()=>boost(game.choices, player)));
@@ -1750,7 +1751,7 @@
 					};	
 					game.displayinfo.center_or_planets=true;
 					game.displayinfo.selectionzone='rolecards';
-					game.displayinfo.allowformultipleselections=false;
+					game.displayinfo.alwMulti=false;
 					game.displayinfo.showoptiontoskip=false;
 					game.messagetoplayer.push('choose a card from the center row to add to your hand');
 					document.addEventListener('choicemade',callbackwrapper);
@@ -1841,6 +1842,7 @@
 	};
 	let gen_player_names = () => game.players.forEach((plyr,i)=>plyr.name = 'Player '+(i+1));
 	let toggle_center_or_planets = () => game.displayinfo.center_or_planets = !game.displayinfo.center_or_planets;
+	let toggle_research = () => game.displayinfo.center_or_research = !game.displayinfo.center_or_research;
 	let togglepasstoplayer = () => {
 		game.passtoplayer = !game.passtoplayer;
 		openFullscreen();
@@ -1921,17 +1923,23 @@
 
 <style>
 	.show {
-		    position: absolute;
-			top: 20vh;
-			height: 25vh;
-			width: 25vh;
-			background: rgb(80,80,80);
-			border-radius: 0% 50% 50% 0%;
-			display: flex;
-			align-items: center;
-			justify-content: center;
-			color:rgb(49, 158, 177);
-			z-index:2;
+		border-radius: 0% 50% 50% 0%;
+	}
+	.show, .research {
+		position: absolute;
+		top: 20vh;
+		height: 25vh;
+		width: 25vh;
+		background: rgb(80,80,80);
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		border:0.5px solid rgb(49, 158, 177);
+		z-index:2;
+	}
+	.research {
+		border-radius: 50% 0% 0% 50%;
+		right:0%;
 	}
 	.player {
 		border-radius: 5vh;
@@ -1994,7 +2002,7 @@
 		border-radius:1vh;
 		height: 50px;
 		min-width: 200px;
-		background:rgb(80,80,80);
+		background: rgb(80,80,80);
 		justify-content: center;
 		align-items: center;
 		display: flex;
@@ -2106,6 +2114,9 @@
 	}
 	.researchrow{
 		height:40%;
+		align-items: center;
+		padding-left: 30vh;
+		width: 70vw;
 	}
 	.researchrow > div{
 		height:95%;
@@ -2154,7 +2165,6 @@
 		font-size: 300%;
 		color:white;
 		background-color: rgb(34, 26, 59);
-
 	}
 </style>
 {#if mounted}
@@ -2166,9 +2176,9 @@
 	</div>
 	{:else if game.currentphase==-3}
 	<div class="playercountselector">
-		<p on:click="{()=>phaseincrement()}" on:tap="{()=>phaseincrement()}">Start a New Online Game</p>
-		<p on:click="{()=>fetchexistinggames()}" on:tap="{()=>fetchexistinggames()}">Join an Existing Online Game</p>
-		<p on:click="{()=>newoffline()}" on:tap="{()=>newoffline()}">Start a New Offline Game</p>
+		<p on:click={()=>phaseincrement()} on:tap={()=>phaseincrement()}>Start a New Online Game</p>
+		<p on:click={()=>fetchexistinggames()} on:tap={()=>fetchexistinggames()}>Join an Existing Online Game</p>
+		<p on:click={()=>newoffline()} on:tap={()=>newoffline()}>Start a New Offline Game</p>
 	</div>
 	{:else if game.currentphase==-2}
 	<div class="playercountselector">
@@ -2213,8 +2223,11 @@
 						<div class="show" on:click={()=>toggle_center_or_planets()} on:tap={()=>toggle_center_or_planets()}>
 							show {(game.displayinfo.center_or_planets) ? "planets" : "center row"}
 						</div>
+						<div class="research" on:click={()=>toggle_research()} on:tap={()=>toggle_research()}>
+							show {(game.displayinfo.center_or_research) ? "research" : "center row"}
+						</div>
 						<!-- stacks -->
-						{#if game.displayinfo.selectionzone=='research'}
+						{#if game.displayinfo.selectionzone=='research' || !game.displayinfo.center_or_research}
 							<div class="zone researchrow">
 								{#each game.research_deck as card (card.id)}
 									<Card on:click="{()=>choosewrapper(card,'research')}" on:tap="{()=>choosewrapper(card,'research')}" selectable={(game.displayinfo.selectionzone=='research')} {card}/>
@@ -2239,33 +2252,19 @@
 						{/if}
 						<!-- played cards-->
 						<div id="playedcards" class="flex zone playedcards" >
-							{#if game.displayinfo.showoptiontoskip}
-								<!-- <img src='./images/o.svg' alt='o' style="margin-right:auto" class="selectable pass" on:click="{()=>choose([{name:'Skip'}])}" on:tap="{()=>choose([{name:'Skip'}])}"/> -->
-								
-								<div style="margin-right:auto" class="selectable pass" on:click="{()=>choose([{name:'Skip'}])}" on:tap="{()=>choose([{name:'Skip'}])}">[Choose None]</div>
-							{:else}
-							<!-- <img src='./images/o.svg' alt='o' style="margin-right:auto" class="bordered pass" /> -->
-								<div style="margin-right:auto" class="bordered pass">[____]</div>
-							{/if}
+							<div style="margin-right:auto" class="selectable pass" 
+								on:click={(game.displayinfo.showoptiontoskip)?()=>choose([{name:'Skip'}]):()=>{}}
+								on:tap={(game.displayinfo.showoptiontoskip)?()=>choose([{name:'Skip'}]):()=>{}}>
+								{(game.displayinfo.showoptiontoskip)?'[Choose None]':'[______]'}
+							</div>
 							{#each game.players[game.acting_player_index].limbo as card (card.id)}
 								<Card mini={true} on:click={()=>unchoose(card)} on:tap={()=>unchoose(card)} {card}/>
 							{/each}
-							{#if game.passp }
-								<!-- <img src='./images/x.svg' alt='x' style="margin-left:auto" class="selectable pass" on:click="{()=>pass_priority()}"on:tap="{()=>pass_priority()}"/> -->
-								<div style="margin-left:auto" class="selectable pass" on:click="{()=>pass_priority()}"on:tap="{()=>pass_priority()}">[Pass to <br> Next Player]</div>
-							{:else if game.passt}
-								<!-- <img src='./images/x.svg' alt='x' style="margin-left:auto" class="selectable pass" on:click="{()=>pass_turn()}" on:tap="{()=>pass_turn()}"/> -->
-								
-								<div style="margin-left:auto" class="selectable pass" on:click="{()=>pass_turn()}" on:tap="{()=>pass_turn()}">[End Turn]</div>
-							{:else if game.displayinfo.allowformultipleselections && game.choices.length>0}
-								<!-- <img src='./images/x.svg' alt='x' style="margin-left:auto" class="selectable pass" on:click="{()=>choose(game[game.displayinfo.choicelabel])}" on:tap="{()=>choose(game[game.displayinfo.choicelabel])}"/> -->
-								
-								<div style="margin-left:auto" class="selectable pass" on:click="{()=>choose(game[game.displayinfo.choicelabel])}" on:tap="{()=>choose(game[game.displayinfo.choicelabel])}">[Choose Selected]</div>
-							{:else}
-								<!-- <img src='./images/x.svg' alt='x' style="margin-left:auto" class="bordered pass" /> -->
-								
-								<div class="bordered pass" >[______]</div>
-							{/if}
+							<div style="margin-left:auto" class="selectable pass" 
+								on:click={(game.passp)?()=>pass_priority():(game.passt)?()=>pass_turn():(game.displayinfo.alwMulti && game.choices.length>0)?()=>choose(game[game.displayinfo.choicelabel]):()=>{}}
+								on:tap={(game.passp)?()=>pass_priority():(game.passt)?()=>pass_turn():(game.displayinfo.alwMulti && game.choices.length>0)?()=>choose(game[game.displayinfo.choicelabel]):()=>{}}>
+								{(game.passp)?'[Pass to <br> Next Player]':(game.passt)?'[End Turn]':(game.displayinfo.alwMulti && game.choices.length>0)?'[Choose Selected]':'[______]'}
+							</div>
 						</div>
 						<div class="messagetoplayer bordered">{game.messagetoplayer[game.messagetoplayer.length-1]}</div>
 						<!-- hand -->
