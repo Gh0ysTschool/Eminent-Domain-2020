@@ -2152,10 +2152,7 @@
 		height:80%;
 		width:100%;
 		top:10%;
-		border: solid #000;
-		border-width: 1px;
-		text-align: center;
-		font-size: 300%;
+		border: none;
 		color:white;
 		background-color: rgb(34, 26, 59);
 	}
