@@ -2160,6 +2160,7 @@
 <div id='dragged'></div>
 <div class='stars'></div>
 <div id="screen" style="height:100%;width:100%;" class="flex">
+	<div class="bordered playingfield">
 	{#if mounted}
 		{#if game.passtoplayer && !lobby.online}
 			<div class='passtoplayer' on:click={e=>togglepasstoplayer()}>
@@ -2194,7 +2195,7 @@
 		{:else}
 			{#each game.players as player}
 				{#if game.players[game.acting_player_index]!==undefined && ((cltName==player.name && lobby.online) || (game.players[game.acting_player_index].id==player.id && !lobby.online)) }
-					<div class="bordered playingfield">
+					
 						<div class="playerinfo bordered">
 							{#each game.players as p}
 								<div style="width:{100/game.number_of_players}%" class="flex player {(game.players[game.acting_player_index] !== undefined && p.name == game.players[game.acting_player_index].name) ? 'selectable' : 'bordered'}">
@@ -2262,7 +2263,6 @@
 							</div>
 							<div class="bordered discard">{player.discard.length}</div>
 						</div>
-					</div>
 				{/if}
 			{/each}
 			<!-- game.options -->
@@ -2282,4 +2282,5 @@
 			{/if}
 		{/if}
 	{/if}
+	</div>
 </div>
