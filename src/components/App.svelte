@@ -2157,6 +2157,7 @@
 		background-color: rgb(34, 26, 59);
 	}
 </style>
+<div id='dragged'></div>
 <div class='stars'></div>
 <div id="screen" style="height:100%;width:100%;" class="flex">
 	{#if mounted}
@@ -2194,7 +2195,6 @@
 			{#each game.players as player}
 				{#if game.players[game.acting_player_index]!==undefined && ((cltName==player.name && lobby.online) || (game.players[game.acting_player_index].id==player.id && !lobby.online)) }
 					<div class="bordered playingfield">
-						<div id='dragged'></div>
 						<div class="playerinfo bordered">
 							{#each game.players as p}
 								<div style="width:{100/game.number_of_players}%" class="flex player {(game.players[game.acting_player_index] !== undefined && p.name == game.players[game.acting_player_index].name) ? 'selectable' : 'bordered'}">
@@ -2202,8 +2202,7 @@
 									<div style="width:33%; text-align: center;"> Galactic Influence {p.influence.length}</div>
 									<div style="width:33%; text-align: center;"> {p.name}</div>
 								</div>
-							{/each}
-							<!-- <div style="width:100%; text-align: center;" class="bordered"> Remaining Influence throughout the Galaxy {game.influence.length}</div> -->
+							{/each}<!-- <div style="width:100%; text-align: center;" class="bordered"> Remaining Influence throughout the Galaxy {game.influence.length}</div> -->
 						</div>
 						<!-- stacks / planets toggle -->
 						<div class="show" on:click={()=>toggle_center_or_planets()} on:tap={()=>toggle_center_or_planets()}>
