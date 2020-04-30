@@ -2159,8 +2159,7 @@
 </style>
 <div id='dragged'></div>
 <div class='stars'></div>
-<div id="screen" style="height:100%;width:100%;" class="flex">
-	<div class="bordered playingfield">
+<div id="screen" class="bordered playingfield">
 	{#if mounted}
 		{#if game.passtoplayer && !lobby.online}
 			<div class='passtoplayer' on:click={e=>togglepasstoplayer()}>
@@ -2282,5 +2281,4 @@
 			{/if}
 		{/if}
 	{/if}
-	</div>
 </div>
