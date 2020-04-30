@@ -3,7 +3,7 @@
 	import Tech from '../components/Tech.svelte';
 	import PlanetCard from '../components/PlanetCard.svelte';
 
-	let game, lobby, phases, corephases, actioncardphases, mounted = false, ws, screenname,
+	let game, lobby, phases, corephases, actioncardphases, mounted = false, ws, cltName,
 	jstr = JSON.stringify, jprs = JSON.parse, log = console.log;
 	import { onMount,afterUpdate, beforeUpdate } from 'svelte';
 	beforeUpdate(()=>{
@@ -1132,7 +1132,6 @@
 			};
 			let url = location.origin.replace(/^http/, "ws"); 
 			lobby = {
-				screenname: "",
 				url: url,
 				sets: ["Base Game"],
 				number_of_players: [2, 3, 4],
@@ -1175,7 +1174,7 @@
             boostWithIcons = (plyr, src) => Object.keys(src.icons).forEach((icon) => plyr.bstIcons[icon]+=src.icons[icon]),
             resetIconBoost = (plyr) => plyr.bstIcons = {survey: 0, warfare: 0, colonize: 0, produce: 0, trade: 0, research: 0 },
             resetSelection = (selected) => selected.forEach((s) => s.selected = false),
-            offlineOrIsClientTurn = () => (screenname == getActPlyr().name || !lobby.online),
+            offlineOrIsClientTurn = () => (cltName == getActPlyr().name || !lobby.online),
             setChoice = (chc) => game[game.displayinfo.choicelabel] = chc,
             cleanOptions = () => game.options=[],
             displayPlanets = () => game.displayinfo.center_or_planets = false,
@@ -1519,7 +1518,7 @@
 	};
 	//pass_turn leadingplayer->nextplayer
 	let pass_turn = () => {
-		if (!lobby.online || screenname == getActPlyr().name ){
+		if (!lobby.online || cltName == getActPlyr().name ){
 			game.passt=false;
 			game.acting_player_index = game.leading_player_index = (game.leading_player_index+1)%game.number_of_players;
 			game.leadingplayer = game.players[game.leading_player_index];
@@ -1827,7 +1826,7 @@
 	let sendstate = () => lobby.online && ws.emit('message',jstr({...game,'header':'set','sender':lobby.player_id}));
 	let registerws = () => ws.emit('message',jstr({...game,'header':'register','sender':lobby.player_id}));
 	let initgame = (number_of_players) => {
-		game.label = screenname;
+		game.label = cltName;
 		lobby.init=true;
 		genplanetdeck();
 		for (let i = 0; i < number_of_players; i++){
@@ -2171,8 +2170,8 @@
 	{#if game.currentphase==-4}
 	<div class="playercountselector">
 		<p> Choose your Screen Name</p>	
-		<input type="text" bind:value={screenname} on:keypress={(e)=>{if(e.key=='Enter') setplayername(screenname)} }>
-		<p on:click="{()=>setplayername(screenname)}" on:tap="{()=>setplayername(screenname)}">Finished</p>
+		<input type="text" bind:value={cltName} on:keypress={(e)=>{if(e.key=='Enter') setplayername(cltName)} }>
+		<p on:click="{()=>setplayername(cltName)}" on:tap="{()=>setplayername(cltName)}">Finished</p>
 	</div>
 	{:else if game.currentphase==-3}
 	<div class="playercountselector">
@@ -2206,7 +2205,7 @@
 		<div class='stars'></div>
 		<div id="screen" style="height:100%;width:100%;" class="flex">
 			{#each game.players as player}
-				{#if game.players[game.acting_player_index]!==undefined && ((screenname==player.name && lobby.online) || (game.players[game.acting_player_index].id==player.id && !lobby.online)) }
+				{#if game.players[game.acting_player_index]!==undefined && ((cltName==player.name && lobby.online) || (game.players[game.acting_player_index].id==player.id && !lobby.online)) }
 					<div class="bordered playingfield">
 						<div id='dragged'></div>
 						<div class="playerinfo bordered">
