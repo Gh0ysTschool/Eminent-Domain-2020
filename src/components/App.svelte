@@ -2163,39 +2163,35 @@
 	}
 </style>
 {#if mounted}
-	{#if game.currentphase==-4}
-	<div class="playercountselector">
-		<p> Choose your Screen Name</p>	
-		<input type="text" bind:value={cltName} on:keypress={(e)=>{if(e.key=='Enter') setplayername(cltName)} }>
-		<p on:click={phaseincrement} on:tap={phaseincrement}>Finished</p>
-	</div>
-	{:else if game.currentphase==-3}
-	<div class="playercountselector">
-		<p on:click={()=>phaseincrement()} on:tap={()=>phaseincrement()}>Start a New Online Game</p>
-		<p on:click={()=>fetchexistinggames()} on:tap={()=>fetchexistinggames()}>Join an Existing Online Game</p>
-		<p on:click={()=>newoffline()} on:tap={()=>newoffline()}>Start a New Offline Game</p>
-	</div>
-	{:else if game.currentphase==-2}
-	<div class="playercountselector">
-		<p> Choose your Game's number of Players</p>
-		<p on:click={(e) => newgame(2)} on:tap={(e) => newgame(2)}>2</p>
-		<p on:click={(e) => newgame(3)} on:tap={(e) => newgame(3)}>3</p>
-		<p on:click={(e) => newgame(4)} on:tap={(e) => newgame(4)}>4</p>
-	</div>
-	{:else if game.currentphase==-1}
-		<div class="playercountselector">
-			<p>Choose a Game to Join</p>
-			{#each lobby.existinggames as g}
-				<p on:click="{()=>enterexistinggame(g)}" on:tap="{()=>enterexistinggame(g)}">{g.label+"'s Game"}</p>
-			{/each}
-		</div>
-	{:else if game.passtoplayer && !lobby.online}
+	{#if game.passtoplayer && !lobby.online}
 		<div class='passtoplayer' on:click="{()=>togglepasstoplayer()}" on:tap="{()=>togglepasstoplayer()}">
 			pass to next player
 		</div>
 	{:else if !!game.winner}
 		<div class='passtoplayer'>
 			{game.winner} WON!!!!
+		</div>
+	{:else if game.currentphase<0}
+		<div class="playercountselector">
+			{#if game.currentphase==-4}
+				<p> Enter your Name</p>	
+				<input type="text" bind:value={cltName} on:keypress={e=>e.key=='Enter' && setplayername(cltName) }>
+				<p on:click={phaseincrement}>Finished</p>
+			{:else if game.currentphase==-3}
+				<p on:click={phaseincrement}>Start a New Online Game</p>
+				<p on:click={newoffline}>Start a New Offline Game</p>
+				<p on:click={fetchexistinggames}>Join an Existing Online Game</p>
+			{:else if game.currentphase==-2}
+				<p> Choose your Game's number of Players</p>
+				{#each [2,3,4] as i}
+					<p on:click={(e) => newgame(i)}>{i}</p>
+				{/each}
+			{:else if game.currentphase==-1}
+				<p>Choose a Game to Join</p>
+				{#each lobby.existinggames as g}
+					<p on:click={()=>enterexistinggame(g)}>{g.label+"'s Game"}</p>
+				{/each}
+			{/if}
 		</div>
 	{:else}
 		<div class='stars'></div>
