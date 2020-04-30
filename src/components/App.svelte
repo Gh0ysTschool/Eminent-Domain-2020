@@ -2130,30 +2130,23 @@
 	::-webkit-scrollbar { 
 		display: none;  
 	}
-	.playercountselector > p {
-		height:33%; 
-		border-radius:11%;
-		text-align: center; 
-		font-size: 300%;
-		background-color: rgb(34, 26, 59);
-		border: solid #000;
-		border-width: 1px;
-	}
 	.playercountselector {
 		background:rgb(80,80,80);
+		width:100vw;
+		height:100vh;
 	}
-	.playercountselector > input {
-		height:33%; 
-		border-radius:11%;
+	.playercountselector > p, .playercountselector > input {
+		height:2em; 
 		text-align: center; 
-		width:100%;
-		font-size: 300%;
+		width:100vw;
+		font-size: 8vh;
 		background-color: rgb(34, 26, 59);
-		border: solid #000;
-		border-width: 1px;
+		border: none;
 		color: rgb(49, 158, 177);
 		padding: 0px;
 		margin:0px;
+		margin-top:7vh;
+		margin-bottom:7vh;
 	}
 	.passtoplayer{
 		height:80%;
