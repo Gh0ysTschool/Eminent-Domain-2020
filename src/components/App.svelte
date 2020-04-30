@@ -1901,10 +1901,6 @@
 		initgame(2);
 		finish();;
 	};
-	let setplayername = (name) => {
-		lobby.screename = name;
-		phaseincrement();
-	};
 	let openFullscreen = () => {
 		let elem = document.getElementById("screen");
 		if (elem.requestFullscreen) {
@@ -2171,7 +2167,7 @@
 	<div class="playercountselector">
 		<p> Choose your Screen Name</p>	
 		<input type="text" bind:value={cltName} on:keypress={(e)=>{if(e.key=='Enter') setplayername(cltName)} }>
-		<p on:click="{()=>setplayername(cltName)}" on:tap="{()=>setplayername(cltName)}">Finished</p>
+		<p on:click={phaseincrement} on:tap={phaseincrement}>Finished</p>
 	</div>
 	{:else if game.currentphase==-3}
 	<div class="playercountselector">
