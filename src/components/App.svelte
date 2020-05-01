@@ -1951,36 +1951,25 @@
 	}
 	.stars:before {
 	transform: translateZ(-300px);
-	animation: fade1 3s linear infinite;
 	}
-	.stars:after {
+	.stars:after,  {
 	transform: translateZ(-600px);
-	animation: fade2 3s linear infinite;
+	}
+	.stars:after, .stars:before {
+		animation: fade2 3s linear infinite;
 	}
 
 	@keyframes fly {
-	from {
-		transform: translateZ(0px);
-	}
-	to {
-		transform: translateZ(300px);
-	}
+		from { transform: translateZ(0px); }
+		to { transform: translateZ(300px); }
 	}
 	@keyframes fade1 {
-	from {
-		opacity: .5;
-	}
-	to {
-		opacity: 1;
-	}
+		from { opacity: .5; }
+		to { opacity: 1; }
 	}
 	@keyframes fade2 {
-	from {
-		opacity: 0;
-	}
-	to {
-		opacity: .5;
-	}
+		from { opacity: 0; }
+		to { opacity: .5; }
 	}
 
 	.pass {
