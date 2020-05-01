@@ -682,14 +682,12 @@
 			passtoplayer: false,
 			nonce: 0,
 			zone: "",
-			displayinfo: {
-				dragged: null,
-				showoptiontoskip: false,
-				alwMulti: false,
-				center_or_research: true,
-				center_or_planets: true, //true = center, false = planets
-				choicelabel: "choices"
-			},
+			skip: false,
+			dragged: null,
+			alwMulti: false,
+			center_or_research: true,
+			center_or_planets: true, //true = center, false = planets
+			choicelabel: "choices",
 			subchoices: [],
 			influence: [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
 			msgtoplayer: ['Waiting for other players to join'],
@@ -1093,8 +1091,8 @@
 					{
 					"Pass the device to the Next Player": f=> {
 						game.zone = "";
-						game.displayinfo.showoptiontoskip = false;
-						game.displayinfo.alwMulti = false;
+						game.skip = false;
+						game.alwMulti = false;
 						game.passp = false;
 						game.passt = true;
 					}
@@ -1167,12 +1165,12 @@
             resetIconBoost = (plyr) => plyr.bstIcons = {survey: 0, warfare: 0, colonize: 0, produce: 0, trade: 0, research: 0 },
             resetSelection = (selected) => selected.forEach((s) => s.selected = false),
             offlineOrIsClientTurn = f=> (cltName == getActPlyr().name || !lobby.online),
-            setChoice = (chc) => game[game.displayinfo.choicelabel] = chc,
+            setChoice = (chc) => game[game.choicelabel] = chc,
             cleanOptions = f=> game.options=[],
-            displayPlanets = f=> game.displayinfo.center_or_planets = false,
-            displayCenter = f=> game.displayinfo.center_or_planets = true,
-            clearChoices = f=> game[game.displayinfo.choicelabel] = [],
-            setDisplayInfo = (zone,multiple,skippable,label) => game.displayinfo = {...game.displayinfo,...{zone:zone,alwMulti:multiple,showoptiontoskip:skippable,choicelabel:label}},
+            displayPlanets = f=> game.center_or_planets = false,
+            displayCenter = f=> game.center_or_planets = true,
+            clearChoices = f=> game[game.choicelabel] = [],
+            setDisplayInfo = (zone,multiple,skippable,label) => game = {...game,...{zone:zone,alwMulti:multiple,skip:skippable,choicelabel:label}},
             getAllCards = (plyr) => [...plyr.deck,...plyr.discard, ...plyr.limbo, ...plyr.hand],
             isPlanet = p => p.type=='planet' || p.type=='fertile' || p.type=='metallic' || p.type=='advanced',
             chkForPerm = (perm) => getActPlyr().permanents.filter( (el)=>el.type==perm ).length != 0,
@@ -1182,20 +1180,20 @@
 	
 	let choosewrapper = (c,zone) => {
 		if ((game.zone == zone) && offlineOrIsClientTurn()){
-			(game.displayinfo.alwMulti) ? multiplechoose(c) : choose([c]);
+			(game.alwMulti) ? multiplechoose(c) : choose([c]);
 		}
 	};
 	let multiplechoose = (choice) => {
 		if (offlineOrIsClientTurn()){		
-			if ( !game[game.displayinfo.choicelabel].includes(choice) ) {
-				setChoice([...game[game.displayinfo.choicelabel],choice]);
+			if ( !game[game.choicelabel].includes(choice) ) {
+				setChoice([...game[game.choicelabel],choice]);
 				choice.selected=true;
 				if (!isPlanet(choice) && choice.name != 'Skip') handToLimbo(getActPlyr(),choice);
 			}
 			else {
 				choice.selected=false;
 				if (!isPlanet(choice) && choice.name != 'Skip'){
-					setChoice(game[game.displayinfo.choicelabel].filter( (el)=> el.id != choice.id ));
+					setChoice(game[game.choicelabel].filter( (el)=> el.id != choice.id ));
 					limboToHand(getActPlyr(),choice);
 				}
 			}
@@ -1211,16 +1209,16 @@
 	};
 	let unchoose = (choice) => {
 		if (offlineOrIsClientTurn()){
-			if ( game[game.displayinfo.choicelabel].includes(choice) ) {
+			if ( game[game.choicelabel].includes(choice) ) {
 				choice.selected=false;
-				setChoice( game[game.displayinfo.choicelabel].filter( (el) => el.id != choice.id ));
+				setChoice( game[game.choicelabel].filter( (el) => el.id != choice.id ));
 				limboToHand(getActPlyr(),choice);
 			}
 		}
 	};
 	let offer = (
-		skippable /*option to skip | sets game.displayinfo.showoptiontoskip=boolean */,
-		multiple /*allows multiple choices | sets game.displayinfo.alwMulti=boolean */, 
+		skippable /*option to skip | sets game.skip=boolean */,
+		multiple /*allows multiple choices | sets game.alwMulti=boolean */, 
 		[field_label, choices] /* available cards to choose from | game.zone={'hand|discard|options|planets|research|rolecards'}, sets choices=array if specified*/, 
 		choice_label /* label for where the choice is stored | set with game[label]=*/,
 		callback /*callback that handles the choice or finishes the phase*/, 
@@ -1604,8 +1602,8 @@
 	//offer_to_boost present_as_choice, choose, boost
 	let offer_to_boost = (player) => {
 		game.zone = 'hand';
-		game.displayinfo.alwMulti = true;
-		game.displayinfo.showoptiontoskip = true;
+		game.alwMulti = true;
+		game.skip = true;
 		present_as_choice(player.hand);
 		document.addEventListener('choicemade',singleCllBck(f=>{},'choicemade',f=>boost(game.choices, player)));
 	};
@@ -1740,10 +1738,10 @@
 						politics(getActPlyr().activeaction, game.choices[0], getActPlyr());
 						callback();
 					};	
-					game.displayinfo.center_or_planets=true;
+					game.center_or_planets=true;
 					game.zone='rolecards';
-					game.displayinfo.alwMulti=false;
-					game.displayinfo.showoptiontoskip=false;
+					game.alwMulti=false;
+					game.skip=false;
 					game.msgtoplayer.push('choose a card from the center row to add to your hand');
 					document.addEventListener('choicemade',callbackwrapper);
 					present_as_choice(game.stacks.rolecards);
@@ -1832,8 +1830,8 @@
 		} 
 	};
 	let gen_player_names = f=> game.players.forEach((plyr,i)=>plyr.name = 'Player '+(i+1));
-	let toggle_center_or_planets = f=> game.displayinfo.center_or_planets = !game.displayinfo.center_or_planets;
-	let toggle_research = f=> game.displayinfo.center_or_research = !game.displayinfo.center_or_research;
+	let toggle_center_or_planets = f=> game.center_or_planets = !game.center_or_planets;
+	let toggle_research = f=> game.center_or_research = !game.center_or_research;
 	let togglepasstoplayer = f=> {
 		game.passtoplayer = !game.passtoplayer;
 		openFullscreen();
@@ -1860,16 +1858,16 @@
 		}
 		return array;
 	};
-	let drag = (evt,item) => f=> game.displayinfo.dragged=item;
+	let drag = (evt,item) => f=> game.dragged=item;
 	let drop = (evt,zone) => f=> {
 		let el = document.getElementById('playedcards').getBoundingClientRect();
 		if (evt.changedTouches[0].clientX > el.left
 		&& evt.changedTouches[0].clientX < el.left+ el.width
 		&& evt.changedTouches[0].clientY < el.top+el.height
 		&& evt.changedTouches[0].clientY > el.top){
-			if(game.displayinfo.dragged!==null) 
-				choosewrapper(game.displayinfo.dragged,zone);
-			game.displayinfo.dragged!=null;
+			if(game.dragged!==null) 
+				choosewrapper(game.dragged,zone);
+			game.dragged!=null;
 		}
 		let ll = document.querySelector('#dragged');
 		ll.style.visibility="hidden";
@@ -2197,26 +2195,26 @@
 					</div>
 					<!-- stacks / planets toggle -->
 					<div class="show" on:click={toggle_center_or_planets}>
-						show {(game.displayinfo.center_or_planets) ? "planets" : "center row"}
+						show {(game.center_or_planets) ? "planets" : "center row"}
 					</div>
 					<div class="research" on:click={toggle_research}>
-						show {(game.displayinfo.center_or_research) ? "research" : "center row"}
+						show {(game.center_or_research) ? "research" : "center row"}
 					</div>
 					<!-- stacks -->
-					{#if game.zone=='research' || !game.displayinfo.center_or_research}
+					{#if game.zone=='research' || !game.center_or_research}
 						<div class="zone researchrow">
 							{#each game.research_deck as card (card.id)}
 								<Card on:click={f=>choosewrapper(card,'research')} selectable={(game.zone=='research')} {card}/>
 							{/each}
 						</div>
-					{:else if game.displayinfo.center_or_planets}
+					{:else if game.center_or_planets}
 						<div class="flex zone centerrow">
 							{#each game.stacks.rolecards as card (card.name)}
 								<Card {card} selectable={game.zone=='rolecards'} pilecount={game.stacks.pilecount[card.type]} on:click={f=>choosewrapper(card,'rolecards')} on:touchmove="{(event)=>move(event, '/images/'+card.type+'.png','rolecards')}" on:touchstart="{(event)=>drag(event,card,'rolecards')}" on:touchend="{(event)=>drop(event,'rolecards')}"/>
 							{/each}
 						</div>
 					{/if}
-					{#if !game.displayinfo.center_or_planets}
+					{#if !game.center_or_planets}
 						<div class="flex zone centerrow">
 							{#each player.unsettled_planets as planet (planet.id)}
 								<PlanetCard planet={planet} on:click={f=>choosewrapper(planet,'unsettled_planets')}/>
@@ -2229,15 +2227,15 @@
 					<!-- played cards-->
 					<div id="playedcards" class="flex zone playedcards" >
 						<div style="margin-right:auto" class="selectable pass" 
-							on:click={(game.displayinfo.showoptiontoskip)?f=>choose([{name:'Skip'}]):f=>{}}>
-							{(game.displayinfo.showoptiontoskip)?'[Choose None]':'[______]'}
+							on:click={(game.skip)?f=>choose([{name:'Skip'}]):f=>{}}>
+							{(game.skip)?'[Choose None]':'[______]'}
 						</div>
 						{#each game.players[game.actPlyrIndx].limbo as card (card.id)}
 							<Card mini={true} on:click={f=>unchoose(card)} {card}/>
 						{/each}
 						<div style="margin-left:auto" class="selectable pass" 
-							on:click={(game.passp)?f=>pass_priority():(game.passt)?f=>pass_turn():(game.displayinfo.alwMulti && game.choices.length>0)?f=>choose(game[game.displayinfo.choicelabel]):f=>{}}>
-							{(game.passp)?'[Pass to <br> Next Player]':(game.passt)?'[End Turn]':(game.displayinfo.alwMulti && game.choices.length>0)?'[Choose Selected]':'[______]'}
+							on:click={(game.passp)?f=>pass_priority():(game.passt)?f=>pass_turn():(game.alwMulti && game.choices.length>0)?f=>choose(game[game.choicelabel]):f=>{}}>
+							{(game.passp)?'[Pass to <br> Next Player]':(game.passt)?'[End Turn]':(game.alwMulti && game.choices.length>0)?'[Choose Selected]':'[______]'}
 						</div>
 					</div>
 					<div class="msgtoplayer bordered">{game.msgtoplayer[game.msgtoplayer.length-1]}</div>
