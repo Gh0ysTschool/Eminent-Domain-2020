@@ -163,7 +163,7 @@
 						() => {
 							let e = game;
 							getActPlyr().activerole = "produce";
-							produce(e.subchoices, e.players[game.acting_player_index].bstIcons.produce); finish(!0)
+							produce(e.subchoices, e.players[game.actPlyrIndx].bstIcons.produce); finish(!0)
 						},
 					),
 					genFollowPhase( "Choose a Planet to Trade Resources from", ["trade"],
@@ -232,12 +232,12 @@
 							let e = game;
 							if ("Skip" != e.choices[0].name) {
 								let a = { advanced: 0, metallic: 0, fertile: 0 };
-								[...e.players[game.acting_player_index].settled_planets, ...e.players[game.acting_player_index].conquered_planets].map(e => {
+								[...e.players[game.actPlyrIndx].settled_planets, ...e.players[game.actPlyrIndx].conquered_planets].map(e => {
 									a[e.type]++
 								});
 								let p = !0;
 								for (let i in e.choices[0].planet_requirements) e.choices[0].planet_requirements[i] > a[i] && (p = !1);
-								p && e.players[game.acting_player_index].bstIcons.research >= e.choices[0].research_cost && play(e.research_deck, e.players[game.acting_player_index].limbo, "discard", e.choices[0].id)
+								p && e.players[game.actPlyrIndx].bstIcons.research >= e.choices[0].research_cost && play(e.research_deck, e.players[game.actPlyrIndx].limbo, "discard", e.choices[0].id)
 							}
 							finish(!0);
 						},
@@ -278,14 +278,14 @@
 						["survey"],
 						() => {
 							let e = game;
-							for (let a = 0; a < e.players[game.acting_player_index].bstIcons.survey - 1; a++) explore_planet(e.players[game.acting_player_index]);
+							for (let a = 0; a < e.players[game.actPlyrIndx].bstIcons.survey - 1; a++) explore_planet(e.players[game.actPlyrIndx]);
 							offer(!0, !1, ["options"], "choices", finish)
 						},
 					),
 					genFollowPhase(
 						"Surveying your Empire",
 						["survey"], 
-						() => { if (getChoice() == "Skip") finish(); catalog_planet(game.players[game.acting_player_index]); finish(!0)},
+						() => { if (getChoice() == "Skip") finish(); catalog_planet(game.players[game.actPlyrIndx]); finish(!0)},
 					),
 				],
 				clnp:[
@@ -347,7 +347,7 @@
 						"Choose between Collecting Starfighters or Conquering a Planet",
 						["warfare"],
 						() => {
-							if (0 == game.players[game.acting_player_index].permanents.filter(e => "bureaucracy" == e.type).length) {
+							if (0 == game.players[game.actPlyrIndx].permanents.filter(e => "bureaucracy" == e.type).length) {
 								let e = game;
 								e.choices = [{
 									name: "Collect Starfighters"
@@ -363,7 +363,7 @@
 						"Adding Starfighters to your Fleet",
 						["warfare"],
 						() => {
-							for (let e = 0; e < game.players[game.acting_player_index].bstIcons.warfare; e++) warfare(game.players[game.acting_player_index]);
+							for (let e = 0; e < game.players[game.actPlyrIndx].bstIcons.warfare; e++) warfare(game.players[game.actPlyrIndx]);
 							finish(!0)
 						},
 						["Collect Starfighters"],
@@ -377,7 +377,7 @@
 					genFollowPhase(
 						"Conquering your planet",
 						["warfare"], 
-						() => {conquer(game.subchoices[0], game.players[game.acting_player_index]); finish(!0);},
+						() => {conquer(game.subchoices[0], game.players[game.actPlyrIndx]); finish(!0);},
 						["Conquer a Planet"],
 					),
 				],
@@ -465,7 +465,7 @@
 				"Trading your Stocks and Bonds",
 				["improved_trade"],
 				() => {
-					game.players[game.acting_player_index].influence.push( game.influence.pop() );
+					game.players[game.actPlyrIndx].influence.push( game.influence.pop() );
 					finish(true);},
 				),
 			// #######################################################################################################################################################################################
@@ -530,7 +530,7 @@
 				["survey_team"],
 				() => {
 					let { game: game, game: { acting_player: player, planet_deck: planet_deck } } = get();
-					player = game.players[game.acting_player_index];
+					player = game.players[game.actPlyrIndx];
 					let planet = planet_deck.pop();
 					player.unsettled_planets.push(planet);
 					finish(true);},
@@ -595,7 +595,7 @@
 				["artificial_intelligence"],
 				() => {
 					let { game: game, game: { acting_player: player } } = get();
-					player = game.players[game.acting_player_index];
+					player = game.players[game.actPlyrIndx];
 					if (game.stacks.pilecount[game.choices[0].type] >= 1) {
 						player.hand.push(
 							Object.assign(
@@ -619,7 +619,7 @@
 				["artificial_intelligence"],
 				() => {
 					let { game: game, game: { acting_player: player } } = get();
-					player = game.players[game.acting_player_index];
+					player = game.players[game.actPlyrIndx];
 					if (game.stacks.pilecount[game.choices[0].type] >= 1) {
 						player.hand.push(
 							Object.assign(
@@ -671,7 +671,7 @@
 				() => {
 					if (getChoice() == "Skip") finish();
 					let { game: game, game: { choices: choices, acting_player: player } } = get();
-					player = game.players[game.acting_player_index];
+					player = game.players[game.actPlyrIndx];
 					research(choices, player, choices.length); finish(true);},
 			)
 		];
@@ -696,8 +696,8 @@
 			options: [],
 			planet_deck: [],
 			curPhs: -4,
-			leading_player_index: 0,
-			acting_player_index: 0,
+			leadPlyrIndx: 0,
+			actPlyrIndx: 0,
 			number_of_players: 2,
 			started: false,
 			gamephases: [
@@ -708,25 +708,25 @@
 						if (game.started) {
 						game.started = true;
 						game.passt = false;
-						game.leading_player_index =
-							(game.leading_player_index + 1) % game.number_of_players;
-						game.acting_player_index = game.leading_player_index;
-						game.leadingplayer = game.players[game.leading_player_index];
-						game.acting_player = game.players[game.leading_player_index];
+						game.leadPlyrIndx =
+							(game.leadPlyrIndx + 1) % game.number_of_players;
+						game.actPlyrIndx = game.leadPlyrIndx;
+						game.leadingplayer = game.players[game.leadPlyrIndx];
+						game.acting_player = game.players[game.leadPlyrIndx];
 						openFullscreen();
 						}
 						if (game.leadingplayer !== undefined) {
-						game.players[game.leading_player_index].rounds++;
+						game.players[game.leadPlyrIndx].rounds++;
 						}
 						let planets = [
-						...game.players[game.leading_player_index].settled_planets,
-						...game.players[game.leading_player_index].conquered_planets
+						...game.players[game.leadPlyrIndx].settled_planets,
+						...game.players[game.leadPlyrIndx].conquered_planets
 						];
 						for (let p in planets) {
-						tallyIcons(game.players[game.leading_player_index],planets[p]);
+						tallyIcons(game.players[game.leadPlyrIndx],planets[p]);
 						}
-						for (let p in game.players[game.leading_player_index].permanents) {
-						tallyIcons(game.players[game.leading_player_index],permanents[p]);
+						for (let p in game.players[game.leadPlyrIndx].permanents) {
+						tallyIcons(game.players[game.leadPlyrIndx],permanents[p]);
 						}
 						finish(true);
 					}
@@ -1146,8 +1146,8 @@
             getSubChoice = () => getSubChoices()[0],
             getSubChoices = () => game.subchoices,
             finish = (cond=false) => phasefinishfunction(cond),
-            getActPlyr = () => game.players[game.acting_player_index],
-            getLeadPlyr = () => game.players[game.leading_player_index],
+            getActPlyr = () => game.players[game.actPlyrIndx],
+            getLeadPlyr = () => game.players[game.leadPlyrIndx],
             simpleOffer = (choices) => offer( false, false, ["options", choices.reduce((acc,cur)=>[...acc,{name:cur}],[])], "choices", finish),
             wrappedOffer = (choices) => () => simpleOffer(choices),
             getActionCorePhases = () => corephases.reduce((acc,cur)=>[...acc,cur.actn],[]).reduce((acc,cur)=>[...acc,...cur],[]),
@@ -1512,9 +1512,9 @@
 	let pass_turn = () => {
 		if (!lobby.online || cltName == getActPlyr().name ){
 			game.passt=false;
-			game.acting_player_index = game.leading_player_index = (game.leading_player_index+1)%game.number_of_players;
-			game.leadingplayer = game.players[game.leading_player_index];
-			game.acting_player = game.players[game.leading_player_index];
+			game.actPlyrIndx = game.leadPlyrIndx = (game.leadPlyrIndx+1)%game.number_of_players;
+			game.leadingplayer = game.players[game.leadPlyrIndx];
+			game.acting_player = game.players[game.leadPlyrIndx];
 			finish();
 		}
 	};
@@ -1522,7 +1522,7 @@
 	let pass_priority = () => {
 		if (offlineOrIsClientTurn()){
 			game.passp=false;
-			game.acting_player_index = (game.acting_player_index+1)%game.number_of_players;
+			game.actPlyrIndx = (game.actPlyrIndx+1)%game.number_of_players;
 			game.acting_player = getActPlyr();
 			finish();
 		}
@@ -1628,7 +1628,7 @@
 	};
 	let performleaderrole = (callback=()=>{}) => getActPlyr().activerole.role.role.leader(callback);
 	let performfollowerrole = (callback=null) => {
-		getActPlyr().activerole.set(game.players[game.leading_player_index].activerole.role);
+		getActPlyr().activerole.set(game.players[game.leadPlyrIndx].activerole.role);
 		getActPlyr().activerole.role.role.follower(callback);
 	};
 	let explore_planet = (player)=>{
@@ -2185,10 +2185,10 @@
 			</div>
 		{:else}
 			{#each game.players as player}
-				{#if game.players[game.acting_player_index]!==undefined && ((cltName==player.name && lobby.online) || (game.players[game.acting_player_index].id==player.id && !lobby.online)) }
+				{#if game.players[game.actPlyrIndx]!==undefined && ((cltName==player.name && lobby.online) || (game.players[game.actPlyrIndx].id==player.id && !lobby.online)) }
 					<div class="playerinfo bordered">
 						{#each game.players as p}
-							<div style="width:{100/game.number_of_players}%" class="flex player {(game.players[game.acting_player_index] !== undefined && p.name == game.players[game.acting_player_index].name) ? 'selectable' : 'bordered'}">
+							<div style="width:{100/game.number_of_players}%" class="flex player {(game.players[game.actPlyrIndx] !== undefined && p.name == game.players[game.actPlyrIndx].name) ? 'selectable' : 'bordered'}">
 								<div style="width:33%; text-align: center;"> Military Might {p.starfighters.small}</div>
 								<div style="width:33%; text-align: center;"> Galactic Influence {p.influence.length}</div>
 								<div style="width:33%; text-align: center;"> {p.name}</div>
@@ -2233,7 +2233,7 @@
 							on:tap={(game.displayinfo.showoptiontoskip)?()=>choose([{name:'Skip'}]):()=>{}}>
 							{(game.displayinfo.showoptiontoskip)?'[Choose None]':'[______]'}
 						</div>
-						{#each game.players[game.acting_player_index].limbo as card (card.id)}
+						{#each game.players[game.actPlyrIndx].limbo as card (card.id)}
 							<Card mini={true} on:click={()=>unchoose(card)} on:tap={()=>unchoose(card)} {card}/>
 						{/each}
 						<div style="margin-left:auto" class="selectable pass" 
