@@ -2212,33 +2212,31 @@
 					{:else if game.displayinfo.center_or_planets}
 						<div class="flex zone centerrow">
 							{#each game.stacks.rolecards as card (card.name)}
-								<Card {card} selectable={game.zone=='rolecards'} pilecount="{game.stacks.pilecount[card.type]}" on:click="{f=>choosewrapper(card,'rolecards')}" on:tap="{f=>choosewrapper(card,'rolecards')}" on:touchmove="{(event)=>move(event, '/images/'+card.type+'.png','rolecards')}" on:touchstart="{(event)=>drag(event,card,'rolecards')}" on:touchend="{(event)=>drop(event,'rolecards')}"/>
+								<Card {card} selectable={game.zone=='rolecards'} pilecount={game.stacks.pilecount[card.type]} on:click={f=>choosewrapper(card,'rolecards')} on:touchmove="{(event)=>move(event, '/images/'+card.type+'.png','rolecards')}" on:touchstart="{(event)=>drag(event,card,'rolecards')}" on:touchend="{(event)=>drop(event,'rolecards')}"/>
 							{/each}
 						</div>
 					{/if}
 					{#if !game.displayinfo.center_or_planets}
 						<div class="flex zone centerrow">
 							{#each player.unsettled_planets as planet (planet.id)}
-								<PlanetCard planet={planet} on:click={f=>choosewrapper(planet,'unsettled_planets')} on:tap={f=>choosewrapper(planet,'unsettled_planets')}/>
+								<PlanetCard planet={planet} on:click={f=>choosewrapper(planet,'unsettled_planets')}/>
 							{/each}
 							{#each [...player.settled_planets, ...player.conquered_planets] as planet (planet.id)}
-								<PlanetCard planet={planet} selected={game.zone=='settled_&_conquered_planets'} on:click={f=>choosewrapper(planet,'settled_&_conquered_planets')} on:tap={f=>choosewrapper(planet,'settled_&_conquered_planets')} />
+								<PlanetCard planet={planet} selected={game.zone=='settled_&_conquered_planets'} on:click={f=>choosewrapper(planet,'settled_&_conquered_planets')} />
 							{/each}
 						</div>
 					{/if}
 					<!-- played cards-->
 					<div id="playedcards" class="flex zone playedcards" >
 						<div style="margin-right:auto" class="selectable pass" 
-							on:click={(game.displayinfo.showoptiontoskip)?f=>choose([{name:'Skip'}]):f=>{}}
-							on:tap={(game.displayinfo.showoptiontoskip)?f=>choose([{name:'Skip'}]):f=>{}}>
+							on:click={(game.displayinfo.showoptiontoskip)?f=>choose([{name:'Skip'}]):f=>{}}>
 							{(game.displayinfo.showoptiontoskip)?'[Choose None]':'[______]'}
 						</div>
 						{#each game.players[game.actPlyrIndx].limbo as card (card.id)}
-							<Card mini={true} on:click={f=>unchoose(card)} on:tap={f=>unchoose(card)} {card}/>
+							<Card mini={true} on:click={f=>unchoose(card)} {card}/>
 						{/each}
 						<div style="margin-left:auto" class="selectable pass" 
-							on:click={(game.passp)?f=>pass_priority():(game.passt)?f=>pass_turn():(game.displayinfo.alwMulti && game.choices.length>0)?f=>choose(game[game.displayinfo.choicelabel]):f=>{}}
-							on:tap={(game.passp)?f=>pass_priority():(game.passt)?f=>pass_turn():(game.displayinfo.alwMulti && game.choices.length>0)?f=>choose(game[game.displayinfo.choicelabel]):f=>{}}>
+							on:click={(game.passp)?f=>pass_priority():(game.passt)?f=>pass_turn():(game.displayinfo.alwMulti && game.choices.length>0)?f=>choose(game[game.displayinfo.choicelabel]):f=>{}}>
 							{(game.passp)?'[Pass to <br> Next Player]':(game.passt)?'[End Turn]':(game.displayinfo.alwMulti && game.choices.length>0)?'[Choose Selected]':'[______]'}
 						</div>
 					</div>
@@ -2248,7 +2246,7 @@
 						<div class='bordered deck'>{player.deck.length}</div>
 						<div class='hand'>
 							{#each player.hand as card (card.id)}
-								<Card card={card} mini={true} selectable={game.zone=='hand'} on:touchstart={(event)=>drag(event, card,'hand')} on:touchend={(event)=>drop(event,'hand')} on:touchmove={(event)=>move(event, card.imgurl,'hand')} on:click={f=>{log(card);choosewrapper(card,'hand');}} on:tap={f=>choosewrapper(card,'hand')} />
+								<Card card={card} mini={true} selectable={game.zone=='hand'} on:touchstart={(event)=>drag(event, card,'hand')} on:touchend={(event)=>drop(event,'hand')} on:touchmove={(event)=>move(event, card.imgurl,'hand')} on:click={f=>{log(card);choosewrapper(card,'hand');}}/>
 							{/each}
 						</div>
 						<div class="bordered discard">{player.discard.length}</div>
@@ -2260,10 +2258,10 @@
 				<div class="{( game.options[0] !== undefined && game.options[0].type !== undefined) ? 'talloptions' : 'options'}">
 					{#each game.options as option (option.name)}
 						{#if option.type !== undefined}
-							<PlanetCard planet={option} selectable={game.zone=='options'} on:click={f=>choosewrapper(option,'options')} on:tap={f=>choosewrapper(option,'options')}/>
-							<PlanetCard planet={{...option,settled:true}} selectable={game.zone=='options'} on:click={f=>choosewrapper(option,'options')} on:tap={f=>choosewrapper(option,'options')}/>
+							<PlanetCard planet={option} selectable={game.zone=='options'} on:click={f=>choosewrapper(option,'options')}/>
+							<PlanetCard planet={{...option,settled:true}} selectable={game.zone=='options'} on:click={f=>choosewrapper(option,'options')}/>
 						{:else}
-							<div class="pass {(game.zone=='options') ? ( (option.selected) ? 'selected' : 'selectable' ): 'bordered'}" on:click="{f=>choosewrapper(option,'options')}" on:tap="{f=>choosewrapper(option,'options')}">
+							<div class="pass {(game.zone=='options') ? ( (option.selected) ? 'selected' : 'selectable' ): 'bordered'}" on:click={f=>choosewrapper(option,'options')}>
 								{option.name}
 							</div>
 						{/if}
