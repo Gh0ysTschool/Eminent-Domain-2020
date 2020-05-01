@@ -2098,6 +2098,7 @@
 		top:15%;
 	}
 	.researchrow{
+		margin-top: 15vh;
 		height:40%;
 		align-items: center;
 		padding-left: 50vh;
