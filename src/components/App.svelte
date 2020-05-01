@@ -9,7 +9,6 @@
 	beforeUpdate(e=>{})
 	afterUpdate(e=>{})
 	onMount(f=>{
-		////////////////////////////////////////////////////////////////////////////////
 		corephases = [
 			/*colonize:*/ {
 				actn:[
@@ -1112,14 +1111,14 @@
 				pilecount: { research: 20, producetrade: 16, colonize: 20, warfare: 16, survey: 20 },
 				survey: 0, warfare: 1, colonize: 2, producetrade: 3, research: 4, //indexes
 				rolecards: [
-				genEmptyCard("survey","Survey",{survey:1}),
-				genEmptyCard("warfare","Warfare",{warfare:1}),
-				genEmptyCard("colonize","Colonize",{colonize:1}),
-				genEmptyCard("producetrade","Produce / Trade",{ produce:1, trade:1}),
-				genEmptyCard("research","Research",{research:1},{research_deck: []}),
+					genEmptyCard("survey","Survey",{survey:1}),
+					genEmptyCard("warfare","Warfare",{warfare:1}),
+					genEmptyCard("colonize","Colonize",{colonize:1}),
+					genEmptyCard("producetrade","Produce / Trade",{ produce:1, trade:1}),
+					genEmptyCard("research","Research",{research:1},{research_deck: []}),
 				]
 			}
-			};
+		};
 			let url = location.origin.replace(/^http/, "ws"); 
 			lobby = {
 				url: url,
@@ -1129,9 +1128,6 @@
 			};
 			game.nonce = nonce;
 			mounted = true;
-	
-		
-	
 	})
 	///////////////////////////////////////////////////////////////////////////////
 	let  	clearOptions = f=> game.options = [],
@@ -1178,11 +1174,7 @@
             singleCllBck = (cllBck,e,func) => f=> {func(); document.removeEventListener(e,this); cllBck();},
             produceTradeHelper = (filled,planets,resources,func=f=>{}) => { let prd = {blue:0,green:0,purple:0,red:0}; planets.forEach((planet) =>  planet.production_zones.forEach((zone)=>{     if (!zone.filled && resources > 0) {         zone.filled = filled;         prd[zone.type]++;         resources--;         func()     }  }) );return prd;};
 	
-	let choosewrapper = (c,zone) => {
-		if ((game.zone == zone) && offlineOrIsClientTurn()){
-			(game.alwMulti) ? multiplechoose(c) : choose([c]);
-		}
-	};
+	let choosewrapper = (c,zone) => (game.zone == zone) && offlineOrIsClientTurn() && (game.alwMulti) ? multiplechoose(c) : choose([c]);
 	let multiplechoose = (choice) => {
 		if (offlineOrIsClientTurn()){		
 			if ( !game[game.choicelabel].includes(choice) ) {
@@ -1199,14 +1191,7 @@
 			}
 		}
 	};
-	let choose = (choices) => {
-		if (offlineOrIsClientTurn()){
-			clearOptions();
-			resetSelection(choices);
-			setChoice(choices);
-			finish();
-		}
-	};
+	let choose = (choices) => offlineOrIsClientTurn() && clearOptions() && resetSelection(choices) && setChoice(choices) && finish();
 	let unchoose = (choice) => {
 		if (offlineOrIsClientTurn()){
 			if ( game[game.choicelabel].includes(choice) ) {
@@ -1299,36 +1284,36 @@
 			advanced:function(adv){this.planet_requirements.advanced = adv; return this;},
 			fertile:function(fer){this.planet_requirements.fertile = fer; return this;},
 			research:function(res){this.research_cost = res; return this;},
-			permanent:function(){this.is_permanent = true; return this;},
-			doubleside:function(){this.is_doublesided = true; return this;},
+			permanent:f=>{this.is_permanent = true; return this;},
+			doubleside:f=>{this.is_doublesided = true; return this;},
 			icons:function(icons){this.icons = Object.assign(this.icons, icons); return this;},
-			improved_colonize:function(){this.research(3);this.imgurl+="improvedcolonize";return this;},
-			improved_survey:  function(){this.research(3);this.imgurl+="improvedsurvey";return this;},
-			improved_research:function(){this.research(3);this.imgurl+="improvedresearch";return this;},
-			improved_warfare: function(){this.research(3);this.imgurl+="improvedwarfare";return this;},
-			improved_production:function(){this.research(3);this.imgurl+="improvedproduction";return this;},
-			improved_trade:  		function(){this.research(3);this.imgurl+="improvedtrade";return this;},
-			surveyteam:			function(){return this.research(5).metallic(2).influence(2).icons({'survey':2}).img('surveyteam');},
-			warpath:				function(){return this.research(5).metallic(2).influence(2).icons({'warfare':2}).img('warpath');},
-			terraforming:			function(){return this.research(5).fertile(2).influence(2).icons({'colonize':2}).img('terraforming');},
-			geneticengineering:	function(){return this.research(5).fertile(2).influence(2).icons({'produce':2}).img('geneticengineering');},
-			artificialintelligence:	function(){return this.research(5).fertile(2).influence(2).icons({'colonize':1,'produce':1}).img('artificialintelligence');},
-			diversemarkets:		function(){return this.research(5).advanced(2).influence(2).icons({'research':1,'trade':1}).img('diversemarkets');},
-			specialization:			function(){return this.research(5).advanced(2).influence(2).icons({'trade':2}).img('specialization');},
-			mobilization:			function(){return this.research(5).metallic(2).influence(2).icons({'survey':1,'warfare':1}).img('mobilization');},
-			datanetwork:			function(){return this.research(5).advanced(2).influence(2).icons({'research':2}).img('datanetwork');},
-			abundance:   			function(){this.research(5);this.imgurl+="abundance"; this.is_doublesided=true; this.is_permanent=true; return this.fertile(2).influence(2);},
-			adaptability:		   	function(){this.research(7);this.imgurl+="adaptability"; this.is_doublesided=true; this.is_permanent=true; return this.advanced(3).influence(5);},
-			bureaucracy:  			function(){this.research(7);this.imgurl+="bureaucracy"; this.is_doublesided=true; this.is_permanent=true; return this.fertile(3).influence(5);},
-			dissension:				function(){return this.research(7).fertile(3).influence(5).permanent().doubleside().img('dissension');},
-			hyperefficiency:		function(){return this.research(7).advanced(3).influence(5).permanent().doubleside().img('hyperefficiency');},
-			imperialism:			function(){return this.research(5).metallic(2).influence(2).permanent().doubleside().img('imperialism').icons({'survey':1,'trade':1,'warfare':1,});},
-			logistics:				function(){return this.research(7).metallic(3).influence(5).permanent().doubleside().img('logistics');},
-			productivity:			function(){return this.research(7).metallic(3).influence(5).permanent().doubleside().img('productivity');},
-			scorchedearthpolicy:	function(){return this.research(5).metallic(2).influence(2).permanent().doubleside().img('scorchedearthpolicy');},
-			streamlining:			function(){return this.research(5).advanced(2).influence(2).permanent().doubleside().img('streamlining');},
-			weaponsemporium:		function(){return this.research(5).advanced(2).influence(2).permanent().doubleside().img('weaponemporium');},
-			fertilegrounds:			function(){return this.research(5).fertile(2).influence(2).permanent().doubleside().img('fertilegrounds').icons({'research':1,'colonize':1,'produce':1,});},
+			improved_colonize:f=>{this.research(3);this.imgurl+="improvedcolonize";return this;},
+			improved_survey:  f=>{this.research(3);this.imgurl+="improvedsurvey";return this;},
+			improved_research:f=>{this.research(3);this.imgurl+="improvedresearch";return this;},
+			improved_warfare: f=>{this.research(3);this.imgurl+="improvedwarfare";return this;},
+			improved_production:f=>{this.research(3);this.imgurl+="improvedproduction";return this;},
+			improved_trade:  		f=>{this.research(3);this.imgurl+="improvedtrade";return this;},
+			surveyteam:			f=>{return this.research(5).metallic(2).influence(2).icons({'survey':2}).img('surveyteam');},
+			warpath:				f=>{return this.research(5).metallic(2).influence(2).icons({'warfare':2}).img('warpath');},
+			terraforming:			f=>{return this.research(5).fertile(2).influence(2).icons({'colonize':2}).img('terraforming');},
+			geneticengineering:	f=>{return this.research(5).fertile(2).influence(2).icons({'produce':2}).img('geneticengineering');},
+			artificialintelligence:	f=>{return this.research(5).fertile(2).influence(2).icons({'colonize':1,'produce':1}).img('artificialintelligence');},
+			diversemarkets:		f=>{return this.research(5).advanced(2).influence(2).icons({'research':1,'trade':1}).img('diversemarkets');},
+			specialization:			f=>{return this.research(5).advanced(2).influence(2).icons({'trade':2}).img('specialization');},
+			mobilization:			f=>{return this.research(5).metallic(2).influence(2).icons({'survey':1,'warfare':1}).img('mobilization');},
+			datanetwork:			f=>{return this.research(5).advanced(2).influence(2).icons({'research':2}).img('datanetwork');},
+			abundance:   			f=>{this.research(5);this.imgurl+="abundance"; this.is_doublesided=true; this.is_permanent=true; return this.fertile(2).influence(2);},
+			adaptability:		   	f=>{this.research(7);this.imgurl+="adaptability"; this.is_doublesided=true; this.is_permanent=true; return this.advanced(3).influence(5);},
+			bureaucracy:  			f=>{this.research(7);this.imgurl+="bureaucracy"; this.is_doublesided=true; this.is_permanent=true; return this.fertile(3).influence(5);},
+			dissension:				f=>{return this.research(7).fertile(3).influence(5).permanent().doubleside().img('dissension');},
+			hyperefficiency:		f=>{return this.research(7).advanced(3).influence(5).permanent().doubleside().img('hyperefficiency');},
+			imperialism:			f=>{return this.research(5).metallic(2).influence(2).permanent().doubleside().img('imperialism').icons({'survey':1,'trade':1,'warfare':1,});},
+			logistics:				f=>{return this.research(7).metallic(3).influence(5).permanent().doubleside().img('logistics');},
+			productivity:			f=>{return this.research(7).metallic(3).influence(5).permanent().doubleside().img('productivity');},
+			scorchedearthpolicy:	f=>{return this.research(5).metallic(2).influence(2).permanent().doubleside().img('scorchedearthpolicy');},
+			streamlining:			f=>{return this.research(5).advanced(2).influence(2).permanent().doubleside().img('streamlining');},
+			weaponsemporium:		f=>{return this.research(5).advanced(2).influence(2).permanent().doubleside().img('weaponemporium');},
+			fertilegrounds:			f=>{return this.research(5).fertile(2).influence(2).permanent().doubleside().img('fertilegrounds').icons({'research':1,'colonize':1,'produce':1,});},
 		}
 	};
 	let gen_research_deck = f=> {
@@ -1424,9 +1409,9 @@
 			icons:{'survey':0,'warfare':0,'colonize':0,'produce':0,'trade':0,'research':0,},
 			handsize_modifier:0,
 			hosted_colonies:[],
-			metallic:function(){this.type='metallic';return this;},
-			advanced:function(){this.type='advanced';return this;},
-			fertile:function(){this.type='fertile';return this;},
+			metallic:f=>{this.type='metallic';return this;},
+			advanced:f=>{this.type='advanced';return this;},
+			fertile:f=>{this.type='fertile';return this;},
 			icon:function(icon_name){this.icons[icon_name]++;return this;},
 			handsize:function(modifier){this.handsize_modifier=modifier;return this;},
 			influence:function(influence){this.influence_value = influence;return this;},
@@ -1704,7 +1689,7 @@
 					func=jsobj[key];
 				}
 				item[key] = f=>{
-					if (wrapperfunction()){
+					if (wrapperf=>){
 						func();
 					} else {
 						finish();
@@ -1907,209 +1892,209 @@
 </script>
 
 <style>
-.show,.research,.stars,.centerrow,.playedcards,.ownedcards,.stars:before,.stars:after,.msgtoplayer,.options,.talloptions{
-    position:absolute
-}
-.show{
-    border-radius:0 50% 50% 0
-}
-.show,.research{
-    top:20vh;
-    height:25vh;
-    width:25vh;
-    background:#505050;
-    display:flex;
-    border:.5px solid #319eb1;
-    z-index:2
-}
-.research{
-    border-radius:50% 0 0 50%;
-    right:0
-}
-.player{
-    border-radius:5vh;
-    background:#505050;
-    display:flex
-}
-.stars{
-    top:50%;
-    left:50%;
-    width:2px;
-    height:2px;
-    box-shadow:686px 466px #d4d4d4,630px 365px whitesmoke,1140px 224px #ededed,1048px 344px white,857px 70px #e3e3e3,651px 400px #dbdbdb,431px -107px #d1d1d1,-144px 151px #d4d4d4,139px 402px #f7f7f7,1090px -160px #c9c9c9,1489px 75px #d6d6d6,-404px -113px #e0e0e0,-94px -358px #fafafa,692px -211px #fcfcfc,1414px 403px #e3e3e3,445px -469px whitesmoke,437px -173px #cfcfcf,-1474px 79px #e8e8e8,286px -370px #e3e3e3,-389px -74px #f2f2f2,-386px 230px #cccccc,1289px -415px #f0f0f0,566px 6px #d1d1d1,645px 53px #f7f7f7,90px -232px #d4d4d4,868px 214px #dedede,633px -126px #c4c4c4,-1432px -324px #c4c4c4,486px -11px #f0f0f0,1484px 338px #f2f2f2,1496px -127px #e8e8e8,587px -446px #f0f0f0,695px -142px #e6e6e6,1145px 14px #f0f0f0,339px -36px #d4d4d4,193px -337px #ebebeb,-1364px -453px #ebebeb,287px -252px whitesmoke,888px 94px #fafafa,485px 148px #c4c4c4,-619px -26px #d6d6d6,-1016px -251px #c9c9c9,-369px -387px #e3e3e3,-87px -433px #f2f2f2,-128px 162px #ededed,285px 468px #cfcfcf,-715px -447px #cfcfcf,1124px -404px #d9d9d9,1209px 248px #e6e6e6,831px -459px #f7f7f7,-1320px 390px #fafafa,-416px 189px #ebebeb,-1445px -2px #d6d6d6,-765px -181px #e3e3e3,-217px -471px #ededed,1283px 76px #e6e6e6,-718px -474px #e0e0e0,198px -71px #dbdbdb,1009px -200px #f2f2f2,-1418px 200px #d4d4d4,1354px -349px #dedede,-934px 243px #cfcfcf,-116px 465px #e8e8e8,-314px 446px #c9c9c9,-338px -311px #dbdbdb,307px 92px #fcfcfc,-1414px 412px #c4c4c4,-1296px 472px #fcfcfc,-787px -76px #e0e0e0,-398px 466px #dbdbdb,-532px 144px #d6d6d6,-1449px -143px #c7c7c7,755px -101px #d9d9d9,222px 355px #dbdbdb,-1145px -318px #d4d4d4,355px -463px whitesmoke,-807px -336px white,-398px -471px #c4c4c4,-935px 152px #d4d4d4,1082px 166px #d1d1d1,456px -159px #dedede,-818px 270px #dbdbdb,63px 270px white,60px 3px #c9c9c9,560px 173px whitesmoke,1217px -292px #ebebeb,-913px -419px #c2c2c2,-790px -386px #e6e6e6,988px -472px #cfcfcf,-318px -476px #f2f2f2,-179px -282px #f7f7f7,1079px -27px #fafafa,-1179px -466px #cccccc,322px -193px #c7c7c7,-545px -269px #cccccc,-1188px 318px #e0e0e0,19px 227px #d9d9d9,-1141px -437px #d9d9d9,475px 86px #cfcfcf,93px 208px #fcfcfc,-734px -222px #fcfcfc,-487px 61px #ebebeb,1136px 107px #d6d6d6,211px -291px #ebebeb,-1003px 91px #c2c2c2,1379px 462px #e8e8e8,-85px -412px #e8e8e8,549px -129px #cfcfcf,-269px -428px #c4c4c4,-442px 281px #c2c2c2,-116px -186px #c2c2c2,-1092px 252px #e8e8e8,598px -47px #c4c4c4,599px 430px #e0e0e0,946px 225px #e3e3e3,994px -441px #c9c9c9,-265px 4px #d4d4d4,1376px -454px #d9d9d9,-963px -224px white,-202px -223px #cfcfcf,1005px -201px #e3e3e3,-659px -302px #f2f2f2,-325px 397px #c2c2c2,-44px -391px #c2c2c2,228px -223px #dedede,-603px 221px #dedede,-147px -397px #c9c9c9,75px -394px #d9d9d9,-308px 239px #f0f0f0,-807px -74px #dbdbdb,-857px -235px #f0f0f0,1055px 465px #d9d9d9,307px 252px #cccccc,-1249px 25px #d1d1d1,669px 304px #dbdbdb,-738px -341px #f0f0f0,-1063px -20px #ebebeb,-1476px -271px #e8e8e8,-20px -415px #cccccc,-1010px 338px #d4d4d4,-166px -3px #cfcfcf,129px 7px #e0e0e0,618px 10px #ededed,-1481px -273px #f2f2f2,-965px -193px #c4c4c4,1271px 431px #f2f2f2,991px -315px #c4c4c4,-918px 270px #d1d1d1,-1172px -216px #ebebeb,1483px 449px #dedede,728px 104px #e6e6e6,144px -366px white,-656px 42px #f2f2f2,-527px -371px #f7f7f7,76px 231px #d1d1d1,1073px -183px #ededed,520px 120px #e3e3e3,-163px 16px #cccccc,-1367px 82px #d6d6d6,-484px -131px whitesmoke,279px -435px #e8e8e8,446px -149px #e0e0e0,-735px 379px #ededed,-794px -442px #f2f2f2,1314px 452px #c2c2c2,-1146px -65px #d6d6d6,-6px -390px #fafafa,524px -183px #cccccc,641px -148px #e3e3e3,827px -341px #dedede,150px 150px #d4d4d4,-1206px 417px #cccccc,-86px -451px #d1d1d1,1144px -22px #e0e0e0,-336px -144px #c2c2c2,436px 173px #c2c2c2,506px -318px #fafafa,167px 90px #cccccc,128px 220px #ebebeb,-344px 424px #c2c2c2,609px 393px #fcfcfc,298px 211px #c2c2c2,-595px -339px #cccccc,1184px -338px #c7c7c7,-1149px 118px #dbdbdb,-891px 14px #ebebeb,107px -419px #d9d9d9,-233px -330px #f0f0f0,-1457px 443px #dedede,-217px 86px #d4d4d4,1142px 83px #c4c4c4,623px 309px #f7f7f7,503px -216px #e8e8e8,-989px -176px #ebebeb,-269px 291px #e3e3e3,483px 22px #fcfcfc,1290px 302px #cccccc,-1016px -273px #c7c7c7,-1426px -65px #e3e3e3,162px -341px #c7c7c7,-103px 335px #dbdbdb,944px -441px #e3e3e3,1151px 163px #e8e8e8,-1110px -42px #cfcfcf,-901px 15px #c4c4c4,179px 60px #dbdbdb,695px -320px #e3e3e3,-923px -348px white,1102px 373px #e0e0e0,-823px 154px whitesmoke,-695px 424px #f2f2f2,1421px -336px #d9d9d9,-947px -471px #fcfcfc,1267px -410px #fafafa,140px -470px #d1d1d1,-931px -476px #d4d4d4,650px -354px #c7c7c7,-838px -426px #dedede,810px 339px #d1d1d1,-1405px 343px #d9d9d9,183px -17px #e3e3e3,-1275px -237px #f2f2f2,-666px -74px white,-1155px 61px #e6e6e6,-1478px 48px #ebebeb,-146px 288px #f0f0f0,936px -277px #e3e3e3,770px 409px #d6d6d6,935px 443px #c4c4c4,-616px -408px #f0f0f0,-97px -268px #c9c9c9,-6px -292px white,10px 262px #ebebeb,791px 438px #f2f2f2,470px -34px #d6d6d6,679px -298px #d6d6d6,1271px -303px whitesmoke,480px 166px #e0e0e0,-502px -241px #d9d9d9,599px -435px #d1d1d1,1317px 176px #c2c2c2,1124px -126px #d6d6d6,17px -358px #c2c2c2,1364px 232px #cccccc,-1176px -248px #c2c2c2,1178px -175px white,84px -98px #c9c9c9,-494px 305px #cccccc,-464px 476px whitesmoke,269px -250px #e3e3e3,-381px 59px #e3e3e3,805px -247px #e8e8e8,103px -60px #d6d6d6,-1368px -210px #f0f0f0,304px 39px whitesmoke,1189px 457px #d9d9d9,-1171px 447px #ebebeb,-1447px -25px #f2f2f2,-507px -347px #f7f7f7,835px -473px #cfcfcf,544px 133px #cccccc,-254px 36px #c9c9c9,-134px 4px #d9d9d9,-727px -88px #ededed,200px 92px #f7f7f7,-1372px -93px #e6e6e6,-16px -17px #d1d1d1,707px -152px #cfcfcf,-442px 311px #c4c4c4,-77px 112px #ebebeb,-1488px 226px #c2c2c2,-1151px 431px white,1180px -95px #d6d6d6,-836px -263px #f2f2f2,-35px 327px #fafafa,1242px -238px #e8e8e8,-679px -273px #c4c4c4,296px 401px #cfcfcf,-724px 70px #f0f0f0,-1350px -171px #f0f0f0,53px 113px whitesmoke,1112px -207px #fafafa,276px -437px #d9d9d9,513px 429px whitesmoke,30px 343px #cccccc,60px 86px #dbdbdb,654px -157px #f2f2f2,970px 299px #cfcfcf,-1247px -264px #ebebeb,-697px 301px #c7c7c7,-205px 50px #ebebeb,-332px 192px #fcfcfc,1077px -374px #c9c9c9,-856px -449px #e6e6e6,313px 389px #fcfcfc,262px -378px #c7c7c7,-801px -206px #c7c7c7,-330px -8px #f7f7f7,284px 3px #cccccc,-1264px 478px #cccccc,1458px -160px whitesmoke,-906px -225px #dedede,503px -98px #c7c7c7,93px -84px #dedede,1201px -347px #f7f7f7,580px 265px #e0e0e0,1495px -157px whitesmoke,-100px -255px #e8e8e8,214px 462px #ebebeb,20px -185px #ededed,1134px -381px #ededed,-1263px 281px #ebebeb,-748px 113px #ebebeb,-1371px -137px whitesmoke,13px -13px #cfcfcf,1116px 101px #e6e6e6,-139px -410px #c7c7c7,258px -83px #c9c9c9,-1336px 351px #e6e6e6,502px 1px #e0e0e0,268px -269px #c2c2c2,-549px 50px #c9c9c9,1191px -363px #c7c7c7,-117px -271px #f2f2f2,287px 288px #dbdbdb,-78px -95px #fafafa,-567px 228px #cfcfcf,-911px -285px #c2c2c2,1242px -257px #fafafa,1304px 336px #ededed,-66px -117px #c4c4c4,-560px 198px #c9c9c9,-1229px -245px whitesmoke,-980px 144px #d1d1d1,-982px -453px #ebebeb,-1056px 272px #d4d4d4,-30px -247px #e8e8e8,-741px 456px #d6d6d6,-1467px 397px #f2f2f2,-1341px 134px #dbdbdb,1226px -408px #cfcfcf,995px 345px #c7c7c7,564px 167px #e6e6e6,-333px 33px #f7f7f7,-1198px 433px #ebebeb,1308px 356px #e3e3e3,997px 286px #d1d1d1,734px 213px #ebebeb,-1256px -173px whitesmoke,847px -200px #cfcfcf,-751px 429px #dedede;
-    animation:fly 3s linear infinite;
-    transform-style:preserve-3d
-}
-.stars:before,.stars:after{
-    content:"";
-    width:inherit;
-    height:inherit;
-    box-shadow:inherit
-}
-.stars:before{
-    transform:translateZ(-300px)
-}
-.stars:after,{
-    transform:translateZ(-600px)
-}
-.stars:after,.stars:before{
-    animation:fade2 3s linear infinite
-}
-@keyframes fly{
-    from{
-        transform:translateZ(0px)
-    }
-    to{
-        transform:translateZ(300px)
-    }
-}
-@keyframes fade1{
-    from{
-        opacity:.5
-    }
-    to{
-        opacity:1
-    }
-}
-@keyframes fade2{
-    from{
-        opacity:0
-    }
-    to{
-        opacity:.5
-    }
-}
-.pass{
-    border-radius:1vh;
-    height:50px;
-    min-width:200px;
-    background:#505050;
-    display:flex
-}
-.msgtoplayer{
-    text-align:center;
-    background:#505050;
-    border-radius:5vh;
-    width:60%;
-    margin-left:20%;
-    top:75%
-}
-.selectable{
-    border:solid #72d2df;
-    border-width:1px
-}
-.selected{
-    border:solid #32be84;
-    border-width:1px
-}
-.flex{
-    display:flex
-}
-.playerinfo{
-    display:flex;
-    width:100%;
-    height:10%
-}
-.playingfield{
-    overflow:hidden;
-    min-height:100vh;
-    min-width:100vw;
-    background:radial-gradient(#523067,#0a0a0a);
-    background-repeat:no-repeat;
-    background-size:cover
-}
-.options,.talloptions{
-    background-image:url(/images/embackground.png);
-    background-repeat:no-repeat;
-    display:flex;
-    right:10%;
-    top:50%;
-    height:15%;
-    width:80%;
-    font-size:150%
-}
-.talloptions{
-    height:30%
-}
-.ownedcards{
-    display:flex;
-    height:20%;
-    top:80%
-}
-.hand{
-    margin:auto;
-    display:flex;
-    max-width:90%;
-    max-height:100%;
-    overflow-x:scroll;
-    overflow-y:hidden
-}
-.deck,.discard{
-    border-radius:3vh;
-    min-width:19vh;
-    max-width:19vh;
-    background-repeat:no-repeat;
-    text-align:center;
-    display:flex;
-    font-size:6vh
-}
-.deck{
-    margin-right:auto;
-    background-image:url(../images/card-draw.svg)
-}
-.discard{
-    margin-left:auto;
-    background-image:url(../images/card-burn.svg)
-}
-.zone{
-    width:100%;
-    overflow-x:scroll;
-    overflow-y:hidden;
-    display:flex
-}
-.centerrow{
-    height:40%;
-    top:15%
-}
-.researchrow{
-    margin-top:15vh;
-    height:40%;
-    padding-left:50vh;
-    width:60vw
-}
-.researchrow > div{
-    height:95%
-}
-.playedcards{
-    height:20%;
-    overflow-x:scroll;
-    top:55%
-}
-.bordered{
-    border:1px solid #000
-}
-::-webkit-scrollbar{
-    display:none
-}
-.playingfield > p,.playingfield > input{
-    height:2em;
-    text-align:center;
-    width:100vw;
-    font-size:8vh;
-    background-color:#221a3b;
-    border:none;
-    color:#319eb1;
-    padding:0;
-    margin:0
-}
-.passtoplayer{
-    height:80%;
-    width:100%;
-    top:10%;
-    border:none;
-    color:#fff;
-    background-color:#221a3b
-}
+	.show,.research,.stars,.centerrow,.playedcards,.ownedcards,.stars:before,.stars:after,.msgtoplayer,.options,.talloptions{
+		position:absolute
+	}
+	.show{
+		border-radius:0 50% 50% 0
+	}
+	.show,.research{
+		top:20vh;
+		height:25vh;
+		width:25vh;
+		background:#505050;
+		display:flex;
+		border:.5px solid #319eb1;
+		z-index:2
+	}
+	.research{
+		border-radius:50% 0 0 50%;
+		right:0
+	}
+	.player{
+		border-radius:5vh;
+		background:#505050;
+		display:flex
+	}
+	.stars{
+		top:50%;
+		left:50%;
+		width:2px;
+		height:2px;
+		box-shadow:686px 466px #d4d4d4,630px 365px whitesmoke,1140px 224px #ededed,1048px 344px white,857px 70px #e3e3e3,651px 400px #dbdbdb,431px -107px #d1d1d1,-144px 151px #d4d4d4,139px 402px #f7f7f7,1090px -160px #c9c9c9,1489px 75px #d6d6d6,-404px -113px #e0e0e0,-94px -358px #fafafa,692px -211px #fcfcfc,1414px 403px #e3e3e3,445px -469px whitesmoke,437px -173px #cfcfcf,-1474px 79px #e8e8e8,286px -370px #e3e3e3,-389px -74px #f2f2f2,-386px 230px #cccccc,1289px -415px #f0f0f0,566px 6px #d1d1d1,645px 53px #f7f7f7,90px -232px #d4d4d4,868px 214px #dedede,633px -126px #c4c4c4,-1432px -324px #c4c4c4,486px -11px #f0f0f0,1484px 338px #f2f2f2,1496px -127px #e8e8e8,587px -446px #f0f0f0,695px -142px #e6e6e6,1145px 14px #f0f0f0,339px -36px #d4d4d4,193px -337px #ebebeb,-1364px -453px #ebebeb,287px -252px whitesmoke,888px 94px #fafafa,485px 148px #c4c4c4,-619px -26px #d6d6d6,-1016px -251px #c9c9c9,-369px -387px #e3e3e3,-87px -433px #f2f2f2,-128px 162px #ededed,285px 468px #cfcfcf,-715px -447px #cfcfcf,1124px -404px #d9d9d9,1209px 248px #e6e6e6,831px -459px #f7f7f7,-1320px 390px #fafafa,-416px 189px #ebebeb,-1445px -2px #d6d6d6,-765px -181px #e3e3e3,-217px -471px #ededed,1283px 76px #e6e6e6,-718px -474px #e0e0e0,198px -71px #dbdbdb,1009px -200px #f2f2f2,-1418px 200px #d4d4d4,1354px -349px #dedede,-934px 243px #cfcfcf,-116px 465px #e8e8e8,-314px 446px #c9c9c9,-338px -311px #dbdbdb,307px 92px #fcfcfc,-1414px 412px #c4c4c4,-1296px 472px #fcfcfc,-787px -76px #e0e0e0,-398px 466px #dbdbdb,-532px 144px #d6d6d6,-1449px -143px #c7c7c7,755px -101px #d9d9d9,222px 355px #dbdbdb,-1145px -318px #d4d4d4,355px -463px whitesmoke,-807px -336px white,-398px -471px #c4c4c4,-935px 152px #d4d4d4,1082px 166px #d1d1d1,456px -159px #dedede,-818px 270px #dbdbdb,63px 270px white,60px 3px #c9c9c9,560px 173px whitesmoke,1217px -292px #ebebeb,-913px -419px #c2c2c2,-790px -386px #e6e6e6,988px -472px #cfcfcf,-318px -476px #f2f2f2,-179px -282px #f7f7f7,1079px -27px #fafafa,-1179px -466px #cccccc,322px -193px #c7c7c7,-545px -269px #cccccc,-1188px 318px #e0e0e0,19px 227px #d9d9d9,-1141px -437px #d9d9d9,475px 86px #cfcfcf,93px 208px #fcfcfc,-734px -222px #fcfcfc,-487px 61px #ebebeb,1136px 107px #d6d6d6,211px -291px #ebebeb,-1003px 91px #c2c2c2,1379px 462px #e8e8e8,-85px -412px #e8e8e8,549px -129px #cfcfcf,-269px -428px #c4c4c4,-442px 281px #c2c2c2,-116px -186px #c2c2c2,-1092px 252px #e8e8e8,598px -47px #c4c4c4,599px 430px #e0e0e0,946px 225px #e3e3e3,994px -441px #c9c9c9,-265px 4px #d4d4d4,1376px -454px #d9d9d9,-963px -224px white,-202px -223px #cfcfcf,1005px -201px #e3e3e3,-659px -302px #f2f2f2,-325px 397px #c2c2c2,-44px -391px #c2c2c2,228px -223px #dedede,-603px 221px #dedede,-147px -397px #c9c9c9,75px -394px #d9d9d9,-308px 239px #f0f0f0,-807px -74px #dbdbdb,-857px -235px #f0f0f0,1055px 465px #d9d9d9,307px 252px #cccccc,-1249px 25px #d1d1d1,669px 304px #dbdbdb,-738px -341px #f0f0f0,-1063px -20px #ebebeb,-1476px -271px #e8e8e8,-20px -415px #cccccc,-1010px 338px #d4d4d4,-166px -3px #cfcfcf,129px 7px #e0e0e0,618px 10px #ededed,-1481px -273px #f2f2f2,-965px -193px #c4c4c4,1271px 431px #f2f2f2,991px -315px #c4c4c4,-918px 270px #d1d1d1,-1172px -216px #ebebeb,1483px 449px #dedede,728px 104px #e6e6e6,144px -366px white,-656px 42px #f2f2f2,-527px -371px #f7f7f7,76px 231px #d1d1d1,1073px -183px #ededed,520px 120px #e3e3e3,-163px 16px #cccccc,-1367px 82px #d6d6d6,-484px -131px whitesmoke,279px -435px #e8e8e8,446px -149px #e0e0e0,-735px 379px #ededed,-794px -442px #f2f2f2,1314px 452px #c2c2c2,-1146px -65px #d6d6d6,-6px -390px #fafafa,524px -183px #cccccc,641px -148px #e3e3e3,827px -341px #dedede,150px 150px #d4d4d4,-1206px 417px #cccccc,-86px -451px #d1d1d1,1144px -22px #e0e0e0,-336px -144px #c2c2c2,436px 173px #c2c2c2,506px -318px #fafafa,167px 90px #cccccc,128px 220px #ebebeb,-344px 424px #c2c2c2,609px 393px #fcfcfc,298px 211px #c2c2c2,-595px -339px #cccccc,1184px -338px #c7c7c7,-1149px 118px #dbdbdb,-891px 14px #ebebeb,107px -419px #d9d9d9,-233px -330px #f0f0f0,-1457px 443px #dedede,-217px 86px #d4d4d4,1142px 83px #c4c4c4,623px 309px #f7f7f7,503px -216px #e8e8e8,-989px -176px #ebebeb,-269px 291px #e3e3e3,483px 22px #fcfcfc,1290px 302px #cccccc,-1016px -273px #c7c7c7,-1426px -65px #e3e3e3,162px -341px #c7c7c7,-103px 335px #dbdbdb,944px -441px #e3e3e3,1151px 163px #e8e8e8,-1110px -42px #cfcfcf,-901px 15px #c4c4c4,179px 60px #dbdbdb,695px -320px #e3e3e3,-923px -348px white,1102px 373px #e0e0e0,-823px 154px whitesmoke,-695px 424px #f2f2f2,1421px -336px #d9d9d9,-947px -471px #fcfcfc,1267px -410px #fafafa,140px -470px #d1d1d1,-931px -476px #d4d4d4,650px -354px #c7c7c7,-838px -426px #dedede,810px 339px #d1d1d1,-1405px 343px #d9d9d9,183px -17px #e3e3e3,-1275px -237px #f2f2f2,-666px -74px white,-1155px 61px #e6e6e6,-1478px 48px #ebebeb,-146px 288px #f0f0f0,936px -277px #e3e3e3,770px 409px #d6d6d6,935px 443px #c4c4c4,-616px -408px #f0f0f0,-97px -268px #c9c9c9,-6px -292px white,10px 262px #ebebeb,791px 438px #f2f2f2,470px -34px #d6d6d6,679px -298px #d6d6d6,1271px -303px whitesmoke,480px 166px #e0e0e0,-502px -241px #d9d9d9,599px -435px #d1d1d1,1317px 176px #c2c2c2,1124px -126px #d6d6d6,17px -358px #c2c2c2,1364px 232px #cccccc,-1176px -248px #c2c2c2,1178px -175px white,84px -98px #c9c9c9,-494px 305px #cccccc,-464px 476px whitesmoke,269px -250px #e3e3e3,-381px 59px #e3e3e3,805px -247px #e8e8e8,103px -60px #d6d6d6,-1368px -210px #f0f0f0,304px 39px whitesmoke,1189px 457px #d9d9d9,-1171px 447px #ebebeb,-1447px -25px #f2f2f2,-507px -347px #f7f7f7,835px -473px #cfcfcf,544px 133px #cccccc,-254px 36px #c9c9c9,-134px 4px #d9d9d9,-727px -88px #ededed,200px 92px #f7f7f7,-1372px -93px #e6e6e6,-16px -17px #d1d1d1,707px -152px #cfcfcf,-442px 311px #c4c4c4,-77px 112px #ebebeb,-1488px 226px #c2c2c2,-1151px 431px white,1180px -95px #d6d6d6,-836px -263px #f2f2f2,-35px 327px #fafafa,1242px -238px #e8e8e8,-679px -273px #c4c4c4,296px 401px #cfcfcf,-724px 70px #f0f0f0,-1350px -171px #f0f0f0,53px 113px whitesmoke,1112px -207px #fafafa,276px -437px #d9d9d9,513px 429px whitesmoke,30px 343px #cccccc,60px 86px #dbdbdb,654px -157px #f2f2f2,970px 299px #cfcfcf,-1247px -264px #ebebeb,-697px 301px #c7c7c7,-205px 50px #ebebeb,-332px 192px #fcfcfc,1077px -374px #c9c9c9,-856px -449px #e6e6e6,313px 389px #fcfcfc,262px -378px #c7c7c7,-801px -206px #c7c7c7,-330px -8px #f7f7f7,284px 3px #cccccc,-1264px 478px #cccccc,1458px -160px whitesmoke,-906px -225px #dedede,503px -98px #c7c7c7,93px -84px #dedede,1201px -347px #f7f7f7,580px 265px #e0e0e0,1495px -157px whitesmoke,-100px -255px #e8e8e8,214px 462px #ebebeb,20px -185px #ededed,1134px -381px #ededed,-1263px 281px #ebebeb,-748px 113px #ebebeb,-1371px -137px whitesmoke,13px -13px #cfcfcf,1116px 101px #e6e6e6,-139px -410px #c7c7c7,258px -83px #c9c9c9,-1336px 351px #e6e6e6,502px 1px #e0e0e0,268px -269px #c2c2c2,-549px 50px #c9c9c9,1191px -363px #c7c7c7,-117px -271px #f2f2f2,287px 288px #dbdbdb,-78px -95px #fafafa,-567px 228px #cfcfcf,-911px -285px #c2c2c2,1242px -257px #fafafa,1304px 336px #ededed,-66px -117px #c4c4c4,-560px 198px #c9c9c9,-1229px -245px whitesmoke,-980px 144px #d1d1d1,-982px -453px #ebebeb,-1056px 272px #d4d4d4,-30px -247px #e8e8e8,-741px 456px #d6d6d6,-1467px 397px #f2f2f2,-1341px 134px #dbdbdb,1226px -408px #cfcfcf,995px 345px #c7c7c7,564px 167px #e6e6e6,-333px 33px #f7f7f7,-1198px 433px #ebebeb,1308px 356px #e3e3e3,997px 286px #d1d1d1,734px 213px #ebebeb,-1256px -173px whitesmoke,847px -200px #cfcfcf,-751px 429px #dedede;
+		animation:fly 3s linear infinite;
+		transform-style:preserve-3d
+	}
+	.stars:before,.stars:after{
+		content:"";
+		width:inherit;
+		height:inherit;
+		box-shadow:inherit
+	}
+	.stars:before{
+		transform:translateZ(-300px)
+	}
+	.stars:after,{
+		transform:translateZ(-600px)
+	}
+	.stars:after,.stars:before{
+		animation:fade2 3s linear infinite
+	}
+	@keyframes fly{
+		from{
+			transform:translateZ(0px)
+		}
+		to{
+			transform:translateZ(300px)
+		}
+	}
+	@keyframes fade1{
+		from{
+			opacity:.5
+		}
+		to{
+			opacity:1
+		}
+	}
+	@keyframes fade2{
+		from{
+			opacity:0
+		}
+		to{
+			opacity:.5
+		}
+	}
+	.pass{
+		border-radius:1vh;
+		height:50px;
+		min-width:200px;
+		background:#505050;
+		display:flex
+	}
+	.msgtoplayer{
+		text-align:center;
+		background:#505050;
+		border-radius:5vh;
+		width:60%;
+		margin-left:20%;
+		top:75%
+	}
+	.selectable{
+		border:solid #72d2df;
+		border-width:1px
+	}
+	.selected{
+		border:solid #32be84;
+		border-width:1px
+	}
+	.flex{
+		display:flex
+	}
+	.playerinfo{
+		display:flex;
+		width:100%;
+		height:10%
+	}
+	.playingfield{
+		overflow:hidden;
+		min-height:100vh;
+		min-width:100vw;
+		background:radial-gradient(#523067,#0a0a0a);
+		background-repeat:no-repeat;
+		background-size:cover
+	}
+	.options,.talloptions{
+		background-image:url(/images/embackground.png);
+		background-repeat:no-repeat;
+		display:flex;
+		right:10%;
+		top:50%;
+		height:15%;
+		width:80%;
+		font-size:150%
+	}
+	.talloptions{
+		height:30%
+	}
+	.ownedcards{
+		display:flex;
+		height:20%;
+		top:80%
+	}
+	.hand{
+		margin:auto;
+		display:flex;
+		max-width:90%;
+		max-height:100%;
+		overflow-x:scroll;
+		overflow-y:hidden
+	}
+	.deck,.discard{
+		border-radius:3vh;
+		min-width:19vh;
+		max-width:19vh;
+		background-repeat:no-repeat;
+		text-align:center;
+		display:flex;
+		font-size:6vh
+	}
+	.deck{
+		margin-right:auto;
+		background-image:url(../images/card-draw.svg)
+	}
+	.discard{
+		margin-left:auto;
+		background-image:url(../images/card-burn.svg)
+	}
+	.zone{
+		width:100%;
+		overflow-x:scroll;
+		overflow-y:hidden;
+		display:flex
+	}
+	.centerrow{
+		height:40%;
+		top:15%
+	}
+	.researchrow{
+		margin-top:15vh;
+		height:40%;
+		padding-left:50vh;
+		width:60vw
+	}
+	.researchrow > div{
+		height:95%
+	}
+	.playedcards{
+		height:20%;
+		overflow-x:scroll;
+		top:55%
+	}
+	.bordered{
+		border:1px solid #000
+	}
+	::-webkit-scrollbar{
+		display:none
+	}
+	.playingfield > p,.playingfield > input{
+		height:2em;
+		text-align:center;
+		width:100vw;
+		font-size:8vh;
+		background-color:#221a3b;
+		border:none;
+		color:#319eb1;
+		padding:0;
+		margin:0
+	}
+	.passtoplayer{
+		height:80%;
+		width:100%;
+		top:10%;
+		border:none;
+		color:#fff;
+		background-color:#221a3b
+	}
 </style>
 <div id='dragged'></div>
 <div class='stars'></div>
