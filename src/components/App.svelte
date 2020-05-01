@@ -2120,12 +2120,7 @@
 	::-webkit-scrollbar { 
 		display: none;  
 	}
-	.playercountselector {
-		background:rgb(80,80,80);
-		width:100vw;
-		height:100vh;
-	}
-	.playercountselector > p, .playercountselector > input {
+	.playingfield > p, .playingfield > input {
 		height:2em; 
 		text-align: center; 
 		width:100vw;
@@ -2155,32 +2150,28 @@
 			<div class='passtoplayer' on:click={e=>togglepasstoplayer()}>
 				pass to next player
 			</div>
-		{:else if !!game.winner}
-			<div class='passtoplayer'>
-				{game.winner} WON!!!!
-			</div>
+		{:else if game.winner}
+			<div class='passtoplayer'> {game.winner} WON!!!! </div>
 		{:else if game.curPhs<0}
-			<div class="playercountselector">
-				{#if game.curPhs==-4}
-					<p> Enter your Name</p>	
-					<input type="text" bind:value={cltName} on:keypress={e=>e.key=='Enter' && phaseincrement() }>
-					<p on:click={phaseincrement}>Finished</p>
-				{:else if game.curPhs==-3}
-					<p on:click={phaseincrement}>Start a New Online Game</p>
-					<p on:click={newoffline}>Start a New Offline Game</p>
-					<p on:click={fetchexistinggames}>Join an Existing Online Game</p>
-				{:else if game.curPhs==-2}
-					<p> Choose your Game's number of Players</p>
-					{#each [2,3,4] as i}
-						<p on:click={e=> newgame(i)}>{i}</p>
-					{/each}
-				{:else if game.curPhs==-1}
-					<p>Choose a Game to Join</p>
-					{#each lobby.existinggames as g}
-						<p on:click={e=>enterexistinggame(g)}>{g.label+"'s Game"}</p>
-					{/each}
-				{/if}
-			</div>
+			{#if game.curPhs==-4}
+				<p> Enter your Name</p>	
+				<input type="text" bind:value={cltName} on:keypress={e=>e.key=='Enter' && phaseincrement() }>
+				<p on:click={phaseincrement}>Finished</p>
+			{:else if game.curPhs==-3}
+				<p on:click={phaseincrement}>Start a New Online Game</p>
+				<p on:click={newoffline}>Start a New Offline Game</p>
+				<p on:click={fetchexistinggames}>Join an Existing Online Game</p>
+			{:else if game.curPhs==-2}
+				<p> Choose your Game's number of Players</p>
+				{#each [2,3,4] as i}
+					<p on:click={e=> newgame(i)}>{i}</p>
+				{/each}
+			{:else if game.curPhs==-1}
+				<p>Choose a Game to Join</p>
+				{#each lobby.existinggames as g}
+					<p on:click={e=>enterexistinggame(g)}>{g.label+"'s Game"}</p>
+				{/each}
+			{/if}
 		{:else}
 			{#each game.players as player}
 				{#if game.players[game.actPlyrIndx]!==undefined && ((cltName==player.name && lobby.online) || (game.players[game.actPlyrIndx].id==player.id && !lobby.online)) }
