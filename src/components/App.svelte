@@ -1907,11 +1907,13 @@
 </script>
 
 <style>
+	.show, .research, .stars, .centerrow, .playedcards, .ownedcards, .stars:before, .stars:after, .msgtoplayer, .options, .talloptions {
+		position: absolute;
+	}
 	.show {
 		border-radius: 0% 50% 50% 0%;
 	}
 	.show, .research {
-		position: absolute;
 		top: 20vh;
 		height: 25vh;
 		width: 25vh;
@@ -1933,7 +1935,6 @@
 		align-items: center;	
 	}
 	.stars {
-	position: absolute;
 	top: 50%;
 	left: 50%;
 	width: 2px;
@@ -1944,7 +1945,6 @@
 	}
 	.stars:before, .stars:after {
 	content: "";
-	position: absolute;
 	width: inherit;
 	height: inherit;
 	box-shadow: inherit;
@@ -1998,7 +1998,6 @@
 		border-radius: 5vh;
 		width: 60%;
 		margin-left: 20%;
-		position: absolute;
 		top:75%;
 	}
 	.selectable{
@@ -2040,7 +2039,6 @@
 		display:flex; 
 		flex-direction:row; 
 		justify-content: space-around;
-		position: absolute; 
 		right:10%;
 		top: 50%;
 		height: 15%;
@@ -2054,7 +2052,6 @@
 		display: flex;
 		flex-direction: row;
 		height:20%;
-		position: absolute;
 		top:80%;
 	}
 	.hand{
@@ -2094,7 +2091,6 @@
 	}
 	.centerrow{
 		height:40%;
-		position:absolute;
 		top:15%;
 	}
 	.researchrow{
@@ -2110,7 +2106,6 @@
 	.playedcards{
 		height:20%;
 		overflow-x:scroll;
-		position:absolute;
 		top:55%;
 		justify-content: flex-start;
 	}
