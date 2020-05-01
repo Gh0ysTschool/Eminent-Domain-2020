@@ -6,16 +6,8 @@
 	let game, lobby, phases, corephases, actioncardphases, mounted = false, ws, cltName,
 	jstr = JSON.stringify, jprs = JSON.parse, log = console.log;
 	import { onMount,afterUpdate, beforeUpdate } from 'svelte';
-	beforeUpdate(()=>{
-	})
-	afterUpdate(()=>{
-		console.log(getActPlyr());
-		// console.log('hand',game.players[0].hand.reduce((acc,cur) => acc+cur.name,''));
-		// let card = game.players[0].hand[0];
-		// console.log('removing ',card.name);
-		// handToLimbo(game.players[0],card);
-		// console.log('hand',game.players[0].hand.reduce((acc,cur) => acc+cur.name,''));
-	})
+	beforeUpdate(e=>{})
+	afterUpdate(e=>{})
 	onMount(()=>{
 		////////////////////////////////////////////////////////////////////////////////
 		corephases = [
@@ -703,7 +695,7 @@
 			messagetoplayer: ['Waiting for other players to join'],
 			options: [],
 			planet_deck: [],
-			currentphase: -4,
+			curPhs: -4,
 			leading_player_index: 0,
 			acting_player_index: 0,
 			number_of_players: 2,
@@ -1670,8 +1662,8 @@
 		callback(choices,arr);
 	};
 	let phasefinishfunction = (send = false) => {
-		game.currentphase = (game.currentphase + 1) % game.gamesequence.length; 
-		let jsobj = game.gamesequence[game.currentphase];
+		game.curPhs = (game.curPhs + 1) % game.gamesequence.length; 
+		let jsobj = game.gamesequence[game.curPhs];
 		let nextphase,msg;
 		for (let key in jsobj){
 			msg = key
@@ -1764,7 +1756,7 @@
 		];
 		return deck;
 	};
-	let phaseincrement = () => game.currentphase++;
+	let phaseincrement = () => game.curPhs++;
 	let newgame = (number_of_players) => {
 		lobby.online=true;
 		initgame(number_of_players);
@@ -1780,7 +1772,7 @@
 				game = {...game,
 					game_id:jprs(msg),
 					hader:'',
-					currentphase:game.currentphase+1};
+					curPhs:game.curPhs+1};
 				lobby = {...lobby,
 					existinggames:[...lobby.existinggames, game],
 					online:true};
@@ -1788,7 +1780,7 @@
 			});
 			ws.on('fetch',(msg)=>{ log('fetch');
 				log(jprs(msg));
-				game.currentphase = -1;
+				game.curPhs = -1;
 				lobby = {...lobby,
 					existinggames: jprs(msg).map(el=>el.game).filter(g=>g.players.filter(ll=>ll.available).length > 0),
 					online:true}
@@ -1897,7 +1889,7 @@
 	};
 	let newoffline = () => {
 		lobby.online=false;
-		game.currentphase = 0;
+		game.curPhs = 0;
 		initgame(2);
 		finish();;
 	};
@@ -2169,22 +2161,22 @@
 			<div class='passtoplayer'>
 				{game.winner} WON!!!!
 			</div>
-		{:else if game.currentphase<0}
+		{:else if game.curPhs<0}
 			<div class="playercountselector">
-				{#if game.currentphase==-4}
+				{#if game.curPhs==-4}
 					<p> Enter your Name</p>	
 					<input type="text" bind:value={cltName} on:keypress={e=>e.key=='Enter' && phaseincrement() }>
 					<p on:click={phaseincrement}>Finished</p>
-				{:else if game.currentphase==-3}
+				{:else if game.curPhs==-3}
 					<p on:click={phaseincrement}>Start a New Online Game</p>
 					<p on:click={newoffline}>Start a New Offline Game</p>
 					<p on:click={fetchexistinggames}>Join an Existing Online Game</p>
-				{:else if game.currentphase==-2}
+				{:else if game.curPhs==-2}
 					<p> Choose your Game's number of Players</p>
 					{#each [2,3,4] as i}
 						<p on:click={e=> newgame(i)}>{i}</p>
 					{/each}
-				{:else if game.currentphase==-1}
+				{:else if game.curPhs==-1}
 					<p>Choose a Game to Join</p>
 					{#each lobby.existinggames as g}
 						<p on:click={e=>enterexistinggame(g)}>{g.label+"'s Game"}</p>
