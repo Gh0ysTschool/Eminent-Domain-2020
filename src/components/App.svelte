@@ -8,7 +8,7 @@
 	import { onMount,afterUpdate, beforeUpdate } from 'svelte';
 	beforeUpdate(e=>{})
 	afterUpdate(e=>{})
-	onMount(()=>{
+	onMount(f=>{
 		////////////////////////////////////////////////////////////////////////////////
 		corephases = [
 			/*colonize:*/ {
@@ -17,19 +17,19 @@
 						wrappedOffer(["Colonize","Settle Colonies"]),
 					),
 					genActionPhase( "Choose an Unsettled Planet to Settle", ["colonize"],
-						() => offer(false,false,["unsettled_planets"],"subchoices",finish),
+						f=> offer(false,false,["unsettled_planets"],"subchoices",finish),
 						["Settle Colonies"],
 					),
 					genActionPhase( "Settling your Planet", ["colonize"],
-						() => settle_colonies(getSubChoice(),getActPlyr()),
+						f=> settle_colonies(getSubChoice(),getActPlyr()),
 						["Settle Colonies"]
 					),
 					genActionPhase( "Choose an Unsettled Planet to Colonize", ["colonize"],
-						() => offer(false,false,["unsettled_planets"],"subchoices",finish),
+						f=> offer(false,false,["unsettled_planets"],"subchoices",finish),
 						["Colonize"],
 					),
 					genActionPhase( "Colonizing your Planet", ["colonize"],
-						() => { colonize(getSubChoice(),getActPlyr().limbo,getActPlyr().limbo.filter(el => el.type == "colonize")[0]); finish(true);},
+						f=> { colonize(getSubChoice(),getActPlyr().limbo,getActPlyr().limbo.filter(el => el.type == "colonize")[0]); finish(true);},
 						["Colonize"],
 					),
 				],
@@ -38,19 +38,19 @@
 						wrappedOffer(["Colonize","Settle Colonies"]),
 						),
 					genLeadPhase( "Choose an Unsettled Planet to Settle", ["colonize"],
-						() => offerUnsettled(),
+						f=> offerUnsettled(),
 						["Settle Colonies"],
 						),
 					genLeadPhase( "Settling your Planet", ["colonize"],
-						() => {settle_colonies(getSubChoice(), getActPlyr() ); finish(); },
+						f=> {settle_colonies(getSubChoice(), getActPlyr() ); finish(); },
 						["Settle Colonies"],
 						),
 					genLeadPhase( "Choose an Unsettled Planet to Colonize", ["colonize"],
-						() => offerUnsettled(),
+						f=> offerUnsettled(),
 						["Colonize"],
 						),
 					genLeadPhase( "Colonizing your Planet", ["colonize"],
-						() => {
+						f=> {
 							if (getSubChoice().name == "Skip") finish();
 							let planet = getSubChoice();
 							if (planet.hosted_colonies.reduce( (acc, cur) => acc + cur.icons.colonize,0) >= planet.settle_cost)
@@ -62,7 +62,7 @@
 				],
 				fllw:[
 					genFollowPhase( "Choose between Settling or Colonizing a Planet", ["colonize"],
-						() => {
+						f=> {
 							if (0 == getActPlyr().permanents.filter(e => "bureaucracy" == e.type).length) {
 								game.choices = [{name: "Colonize"}];
 								finish(!0);
@@ -70,19 +70,19 @@
 						},
 					),
 					genFollowPhase( "Choose an Unsettled Planet to Settle", ["colonize"],
-						() => offerUnsettled(),
+						f=> offerUnsettled(),
 						["Settle Colonies"],
 					),
 					genFollowPhase( "Settling your Planet", ["colonize"],
-						() => { settle_colonies(getSubChoice(), getActPlyr()); finish(!0);},
+						f=> { settle_colonies(getSubChoice(), getActPlyr()); finish(!0);},
 						["Settle Colonies"],
 					), 
 					genFollowPhase( "Choose an Unsettled Planet to Colonize", ["colonize"], 
-						() => offerUnsettled(),
+						f=> offerUnsettled(),
 						["Colonize"],
 					),
 					genFollowPhase( "Colonizing your Planet", ["colonize"],
-						() => {
+						f=> {
 							let planet = getSubChoices().find((planet)=>planet.hosted_colonies.reduce((acc, cur) => acc + cur.icons.colonize ) >= planet.settle_cost);
 							colonize( planet, getActPlyr().limbo,getActPlyr().limbo.filter(el => el.type == "colonize")[0]);
 							finish(true);
@@ -98,32 +98,32 @@
 						wrappedOffer(["produce","trade" ]),
 					),
 					genActionPhase( "Choose a Planet to Produce Resources on", ["producetrade"],
-						() => offer( false, false , ["settled_&_conquered_planets"], "subchoices", finish ),
+						f=> offer( false, false , ["settled_&_conquered_planets"], "subchoices", finish ),
 						["produce"],
 					),
 					genActionPhase( "Producing a Resource", ["producetrade"],
-						() => { produce(getSubChoices()); finish(true);},
+						f=> { produce(getSubChoices()); finish(true);},
 						["produce"],
 					),
 					genActionPhase( "Choose a Planet to Trade Resources from", ["producetrade"],
-						() => offer( false, false, ["settled_&_conquered_planets"], "subchoices", finish),
+						f=> offer( false, false, ["settled_&_conquered_planets"], "subchoices", finish),
 						["trade"],
 					),
 					genActionPhase( "Trading a Resource", ["producetrade"],
-						() => {trade(getSubChoices(),getActPlyr()); finish();},
+						f=> {trade(getSubChoices(),getActPlyr()); finish();},
 						["trade"],
 					)
 				],
 				lead:[
 					genLeadPhase( "Choose between Producing or Trading Resources", ["producetrade"],
-						() => offer( false , false , ["options",[{ name: "produce" }, { name: "trade" }]], "choices", finish ),
+						f=> offer( false , false , ["options",[{ name: "produce" }, { name: "trade" }]], "choices", finish ),
 					),
 					genLeadPhase( "Choose a Planet to Produce Resources on", ["producetrade"],
-						() => offer( true , true , [ "settled_&_conquered_planets" ], "subchoices", finish ),
+						f=> offer( true , true , [ "settled_&_conquered_planets" ], "subchoices", finish ),
 						["produce"],
 					),
 					genLeadPhase( "Producing a Resource", ["producetrade"],
-						() => {
+						f=> {
 							getActPlyr().activerole = "produce";
 							let prd = produce( getSubChoices(), getActPlyr().bstIcons.produce );
 							if ( getActvActn() == "genetic_engineering" ) prd.forEach((plyr)=>plyr = [...plyr,{influence:[...plyr.influence,game.influence.pop()]}]);
@@ -132,11 +132,11 @@
 						["produce"],
 					),
 					genLeadPhase( "Choose a Planet to Trade Resources from", ["producetrade"],
-						() => offer( true , true , [ "settled_&_conquered_planets" ],"subchoices", finish ),
+						f=> offer( true , true , [ "settled_&_conquered_planets" ],"subchoices", finish ),
 						["trade"],
 					),
 					genLeadPhase( "Trading a Resource", ["producetrade"],
-						() => {
+						f=> {
 							getActPlyr().activerole = "trade";
 							let prd = trade(getSubChoices(),getActPlyr(),getActPlyr().bstIcons.trade );
 							if (getActvActn() == "diverse_markets") {
@@ -157,20 +157,20 @@
 				],
 				fllw:[
 					genFollowPhase( "Choose a Planet to Produce Resources on", ["produce"],
-						() => offer(!0, !0, ["settled_&_conquered_planets"], "subchoices", finish),
+						f=> offer(!0, !0, ["settled_&_conquered_planets"], "subchoices", finish),
 					),
 					genFollowPhase( "Producing a Resource", ["produce"],
-						() => {
+						f=> {
 							let e = game;
 							getActPlyr().activerole = "produce";
 							produce(e.subchoices, e.players[game.actPlyrIndx].bstIcons.produce); finish(!0)
 						},
 					),
 					genFollowPhase( "Choose a Planet to Trade Resources from", ["trade"],
-						() => offer(!0, !0, ["settled_&_conquered_planets"], "subchoices", finish),
+						f=> offer(!0, !0, ["settled_&_conquered_planets"], "subchoices", finish),
 					),
 					genFollowPhase( "Trading a Resource", ["trade"],
-						() => {
+						f=> {
 							let e = game;
 							getActPlyr().activerole = "trade";
 							trade(e.subchoices, getActPlyr(), getActPlyr().bstIcons.trade);
@@ -185,12 +185,12 @@
 					genActionPhase(
 						"Choose a Role Card to Replace Politics with",
 						["politics"],
-						() => offer(false, false, ["rolecards"], "choices", finish ),
+						f=> offer(false, false, ["rolecards"], "choices", finish ),
 					),
 					genActionPhase(
 						"Swapping the Role Card for your Politics Card",
 						["politics"],
-						() => {politics(getActPlyr().limbo.filter(el => el.type == "politics")[0], getChoices()[0], getActPlyr() ); finish(true);},
+						f=> {politics(getActPlyr().limbo.filter(el => el.type == "politics")[0], getChoices()[0], getActPlyr() ); finish(true);},
 					),
 				],
 				lead:[],
@@ -200,18 +200,18 @@
 			/*/research:/*/ {
 				actn:[
 					genActionPhase( "Choose up to 2 Cards from your Hand to Remove from the Game", ["research"],
-						() => offer( false, true,["hand"], "choices", finish),
+						f=> offer( false, true,["hand"], "choices", finish),
 					),
 					genActionPhase( "Removing your Cards from the Game", ["research"],
-						() => {research(getChoices(),getActPlyr()); finish(true);},
+						f=> {research(getChoices(),getActPlyr()); finish(true);},
 					),
 				],
 				lead:[
 					genLeadPhase( "Choose a Technology to Research", ["research"],
-						() => offer( true , false , ["research" ], "choices", finish   ),
+						f=> offer( true , false , ["research" ], "choices", finish   ),
 					), 
 					genLeadPhase( "Researching your Technology", ["research"],
-						() => {
+						f=> {
 							if (getChoice() == "Skip") {finish(true);return;}
 							let card = getChoices()[0];
 							let p = { advanced: 0, metallic: 0, fertile: 0 };
@@ -225,10 +225,10 @@
 				],
 				fllw:[
 					genFollowPhase( "Choose a Technology to Research", ["research"],
-						() => offer(!0, !1, ["research"], "choices", finish),
+						f=> offer(!0, !1, ["research"], "choices", finish),
 					),
 					genFollowPhase( "Researching your Technology", ["survey"],
-						() => {
+						f=> {
 							let e = game;
 							if ("Skip" != e.choices[0].name) {
 								let a = { advanced: 0, metallic: 0, fertile: 0 };
@@ -248,14 +248,14 @@
 			/*/survey:/*/ {
 				actn:[        
 					genActionPhase( "Surveying your Empire", ["survey"],
-						() => {survey(getActPlyr()); finish(true);},
+						f=> {survey(getActPlyr()); finish(true);},
 					),
 				],
 				lead:[
 					genLeadPhase(
 						"Choose a Planet from your Galaxy to Explore",
 						["survey"],
-						() => {
+						f=> {
 							for ( let i = 0; i < getActPlyr().bstIcons.survey; i++ ) {
 								explore_planet( getActPlyr() );
 							}
@@ -265,7 +265,7 @@
 					genLeadPhase(
 						"Surveying your Empire",
 						["survey"],
-						() => {
+						f=> {
 							if (getChoice() == "Skip") finish();
 							catalog_planet( getActPlyr() );
 							finish(true);
@@ -276,7 +276,7 @@
 					genFollowPhase(
 						"Choose a Planet from your Galaxy to Explore",
 						["survey"],
-						() => {
+						f=> {
 							let e = game;
 							for (let a = 0; a < e.players[game.actPlyrIndx].bstIcons.survey - 1; a++) explore_planet(e.players[game.actPlyrIndx]);
 							offer(!0, !1, ["options"], "choices", finish)
@@ -285,12 +285,12 @@
 					genFollowPhase(
 						"Surveying your Empire",
 						["survey"], 
-						() => { if (getChoice() == "Skip") finish(); catalog_planet(game.players[game.actPlyrIndx]); finish(!0)},
+						f=> { if (getChoice() == "Skip") finish(); catalog_planet(game.players[game.actPlyrIndx]); finish(!0)},
 					),
 				],
 				clnp:[
 					{"":
-					()=>{}},
+					f=>{}},
 				],
 			},
 			/*/warfare:/*/ {
@@ -303,19 +303,19 @@
 					genActionPhase(
 						"Adding a Starfighter to your Fleet",
 						["warfare"],
-						() => {warfare(getActPlyr()); finish(true);},
+						f=> {warfare(getActPlyr()); finish(true);},
 						["Collect a Starfighter"],
 					),
 					genActionPhase(
 						"Choose a Planet to Conquer",
 						["warfare"],
-						() => offer(false, false, ["unsettled_planets"], "subchoices", finish),
+						f=> offer(false, false, ["unsettled_planets"], "subchoices", finish),
 						["Conquer a Planet"],
 					),
 					genActionPhase(
 						"Conquering your planet",
 						["warfare"],
-						() => {conquer(getSubChoice(),getActPlyr()); finish(true);},
+						f=> {conquer(getSubChoice(),getActPlyr()); finish(true);},
 						["Conquer a Planet"],
 					),
 				],
@@ -324,18 +324,18 @@
 						wrappedOffer(["Conquer a Planet", "Collect Starfighters"]),
 					),
 					genLeadPhase( "Adding Starfighters to your Fleet", ["warfare"],
-						() => {
-							range(1,getActPlyr().bstIcons.warfare).forEach( ()=>warfare( getActPlyr() ) );
+						f=> {
+							range(1,getActPlyr().bstIcons.warfare).forEach( f=>warfare( getActPlyr() ) );
 							finish(true);
 						},
 						["Collect Starfighters"],
 					),
 					genLeadPhase( "Choose a Planet to Conquer", ["warfare"],
-						() => offerUnsettled(),
+						f=> offerUnsettled(),
 						["Conquer a Planet"],
 					),
 					genLeadPhase( "Conquering your planet", ["warfare"],
-						() => {
+						f=> {
 							conquer(getSubChoice(), getActPlyr() );
 							finish(true);
 						},
@@ -346,7 +346,7 @@
 					genFollowPhase(
 						"Choose between Collecting Starfighters or Conquering a Planet",
 						["warfare"],
-						() => {
+						f=> {
 							if (0 == game.players[game.actPlyrIndx].permanents.filter(e => "bureaucracy" == e.type).length) {
 								let e = game;
 								e.choices = [{
@@ -362,7 +362,7 @@
 					genFollowPhase(
 						"Adding Starfighters to your Fleet",
 						["warfare"],
-						() => {
+						f=> {
 							for (let e = 0; e < game.players[game.actPlyrIndx].bstIcons.warfare; e++) warfare(game.players[game.actPlyrIndx]);
 							finish(!0)
 						},
@@ -371,19 +371,19 @@
 					genFollowPhase(
 						"Choose a Planet to Conquer",
 						["warfare"], 
-						() => offer(!1, !1, ["unsettled_planets"], "subchoices", finish),
+						f=> offer(!1, !1, ["unsettled_planets"], "subchoices", finish),
 						["Conquer a Planet"],
 					),
 					genFollowPhase(
 						"Conquering your planet",
 						["warfare"], 
-						() => {conquer(game.subchoices[0], game.players[game.actPlyrIndx]); finish(!0);},
+						f=> {conquer(game.subchoices[0], game.players[game.actPlyrIndx]); finish(!0);},
 						["Conquer a Planet"],
 					),
 				],
 				clnp:[
 					{"":
-					()=>{}},
+					f=>{}},
 				],
 			},
 		];
@@ -393,18 +393,18 @@
 			genActionPhase(
 				"Choose wether or not to Settle a Planet",
 				["improved_colonize"],
-				() => offer( true, false, [ "options", [{ name: "settle" }, { name: "Skip" }]], "choices", finish)
+				f=> offer( true, false, [ "options", [{ name: "settle" }, { name: "Skip" }]], "choices", finish)
 			),
 			genActionPhase(
 				"Choose a Planet to Settle",
 				["improved_colonize"],
-				() => offerUnsettled(),
+				f=> offerUnsettled(),
 				["settle"],
 				),
 			genActionPhase(
 				"Settling your Planet",
 				["improved_colonize"],
-				() => { settle_colonies(getSubChoice(),getActvPlyr()); finish(true);},
+				f=> { settle_colonies(getSubChoice(),getActvPlyr()); finish(true);},
 				["settle"],
 				),
 			genActionPhase(
@@ -415,25 +415,25 @@
 			genActionPhase(
 				"Choose an Unsettled Planet to Settle",
 				["improved_colonize"],
-				() => offerUnsettled(),
+				f=> offerUnsettled(),
 				["Settle Colonies"],
 				),
 			genActionPhase(
 				"Settling your Planet",
 				["improved_colonize"],
-				() => { settle_colonies( getSubChoice(), getActPlyr()); finish(true);},
+				f=> { settle_colonies( getSubChoice(), getActPlyr()); finish(true);},
 				["Settle Colonies"],
 				),
 			genActionPhase(
 				"Choose an Unsettled Planet to Colonize",
 				["improved_colonize"],
-				() => offerUnsettled(),
+				f=> offerUnsettled(),
 				["Colonize"],
 				),
 			genActionPhase(
 				"Colonizing your Planet",
 				["improved_colonize"],
-				() => { colonize( getSubChoice(), getActPlyr().limbo, getActPlyr().limbo.filter(el => el.type == "improved_colonize")[0]); finish(true);},
+				f=> { colonize( getSubChoice(), getActPlyr().limbo, getActPlyr().limbo.filter(el => el.type == "improved_colonize")[0]); finish(true);},
 				["Colonize"],
 				),
 			// #######################################################################################################################################################################################
@@ -441,30 +441,30 @@
 			genActionPhase(
 				"Choose an empty Production Zone to Produce in",
 				["improved_production"],
-				() => offer( true, false, ["settled_&_conquered_planets"], "choices" , finish),
+				f=> offer( true, false, ["settled_&_conquered_planets"], "choices" , finish),
 				),
 			genActionPhase(
 				"Producing your Resource",
 				["improved_production"],
-				() => { 
+				f=> { 
 					if (getChoice() == "Skip") finish(); produce(game.choices); finish(true);},
 				),
 			genActionPhase(
 				"Choose an empty Production Zone to Produce in",
 				["improved_production"],
-				() => offer(true, false, ["settled_&_conquered_planets"], "choices", finish),
+				f=> offer(true, false, ["settled_&_conquered_planets"], "choices", finish),
 				),
 			genActionPhase(
 				"Producing your Resource",
 				["improved_production"],
-				() => { if (getChoice() == "Skip") finish();produce(game.choices); finish(true);},
+				f=> { if (getChoice() == "Skip") finish();produce(game.choices); finish(true);},
 				),
 			// #######################################################################################################################################################################################
 			// improved_trade : 1
 			genActionPhase(
 				"Trading your Stocks and Bonds",
 				["improved_trade"],
-				() => {
+				f=> {
 					game.players[game.actPlyrIndx].influence.push( game.influence.pop() );
 					finish(true);},
 				),
@@ -473,21 +473,21 @@
 			genActionPhase(
 				"Choose up to 3 Cards from your Hand to Remove from the Game",
 				["improved_research"],
-				() => {
+				f=> {
 					draw(getActPlyr());
 					offer(false, true, ["hand"], "choices", finish);}
 				),
 			genActionPhase(
 				"Removing your Cards from the Game",
 				["improved_research"],
-				() => {research(getChoices(), getActPlyr(), 3); finish(true);},
+				f=> {research(getChoices(), getActPlyr(), 3); finish(true);},
 				),
 			// #######################################################################################################################################################################################
 			// improved_survey : 1
 			genActionPhase(
 				"Drawing your Cards",
 				["improved_survey"],
-				() => {
+				f=> {
 					draw( getActPlyr() ); draw( getActPlyr() ); draw( getActPlyr() ); finish(true);},
 				),
 			// #######################################################################################################################################################################################
@@ -500,19 +500,19 @@
 			genActionPhase(
 				"Adding a Starfighter to your Fleet",
 				["improved_warfare"],
-				() => {warfare(getActPlyr()); warfare(getActPlyr()); finish(true);},
+				f=> {warfare(getActPlyr()); warfare(getActPlyr()); finish(true);},
 				["Collect a Starfighter"]
 				),
 			genActionPhase(
 				"Choose a Planet to Conquer",
 				["improved_warfare"],
-				() => offerUnsettled(),
+				f=> offerUnsettled(),
 				["Conquer a Planet"]
 				),
 			genActionPhase(
 				"Conquering your planet",
 				["improved_warfare"],
-				() => { conquer(getSubChoice(),getActPlyr()); finish(true);},
+				f=> { conquer(getSubChoice(),getActPlyr()); finish(true);},
 				["Conquer a Planet"]
 				),
 			// #######################################################################################################################################################################################
@@ -520,7 +520,7 @@
 			genActionPhase(
 				"Collecting your Star Fighters",
 				["mobilization"],
-				() => { warfare(getActPlyr()); warfare(getActPlyr()); finish(true);},
+				f=> { warfare(getActPlyr()); warfare(getActPlyr()); finish(true);},
 				),
 
 			// #######################################################################################################################################################################################
@@ -528,7 +528,7 @@
 			genActionPhase(
 				"Adding Top Card of the Planet deck to your Empire",
 				["survey_team"],
-				() => {
+				f=> {
 					let { game: game, game: { acting_player: player, planet_deck: planet_deck } } = get();
 					player = game.players[game.actPlyrIndx];
 					let planet = planet_deck.pop();
@@ -540,34 +540,34 @@
 			genActionPhase(
 				"Choose a Planet to Conquer",
 				["war_path"],
-				() => offerUnsettled(),
+				f=> offerUnsettled(),
 				),
 			genActionPhase(
 				"Conquering your planet",
 				["war_path"],
-				() => { if (getChoice() == "Skip") finish(); conquer(getChoice(),getActPlyr()); finish(true);},
+				f=> { if (getChoice() == "Skip") finish(); conquer(getChoice(),getActPlyr()); finish(true);},
 				),
 			genActionPhase(
 				"Choose a Planet to Conquer",
 				["war_path"],
-				() => offerUnsettled(),
+				f=> offerUnsettled(),
 				),
 			genActionPhase(
 				"Conquering your planet",
 				["war_path"],
-				() => { if (getChoice() == "Skip") finish(); conquer(getChoice(),getActPlyr()); finish(true);},
+				f=> { if (getChoice() == "Skip") finish(); conquer(getChoice(),getActPlyr()); finish(true);},
 				),
 			// #######################################################################################################################################################################################
 			// terraforming : 2
 			genActionPhase(
 				"Choose an Unsettled Planet to Terraform",
 				["terraforming"],
-				() => offerUnsettled()
+				f=> offerUnsettled()
 				),
 			genActionPhase(
 				"Terraforming your Planet",
 				["terraforming"],
-				() => {
+				f=> {
 					colonize( getChoice(), getActPlyr().limbo, getActPlyr().limbo.filter(el => el.type == "terraforming")[0]);
 					if (getChoice().hosted_colonies.length > 0) {
 						let c = getChoice().hosted_colonies.reduce((acc, cur) => acc + cur.icons.colonize,0);
@@ -588,12 +588,12 @@
 			genActionPhase(
 				"Select a Role Card to take into your Hand",
 				["artificial_intelligence"],
-				() => offer( false,  false, ["rolecards"], "choices", finish)
+				f=> offer( false,  false, ["rolecards"], "choices", finish)
 				),
 			genActionPhase(
 				"Adding Role Card to your Machine Learning Model",
 				["artificial_intelligence"],
-				() => {
+				f=> {
 					let { game: game, game: { acting_player: player } } = get();
 					player = game.players[game.actPlyrIndx];
 					if (game.stacks.pilecount[game.choices[0].type] >= 1) {
@@ -612,12 +612,12 @@
 			genActionPhase(
 				"Select a Role Card to take into your Hand",
 				["artificial_intelligence"],
-				() => offer( false,  false, [ "rolecards" ], "choices", finish)
+				f=> offer( false,  false, [ "rolecards" ], "choices", finish)
 				),
 			genActionPhase(
 				"Adding Role Card to your Machine Learning Model",
 				["artificial_intelligence"],
-				() => {
+				f=> {
 					let { game: game, game: { acting_player: player } } = get();
 					player = game.players[game.actPlyrIndx];
 					if (game.stacks.pilecount[game.choices[0].type] >= 1) {
@@ -651,24 +651,24 @@
 			genActionPhase(
 				"Specializaing in your Seleted Resource",
 				["specialization"],
-				() => { getActPlyr().specialization = getChoice(); finish(true);},
+				f=> { getActPlyr().specialization = getChoice(); finish(true);},
 				),
 			// #######################################################################################################################################################################################
 			// data_network : 3
 			genActionPhase(
 				"Drawing Your Cards",
 				["data_network"],
-				() => { draw(getActPlyr()); draw(getActPlyr()); finish(true);},
+				f=> { draw(getActPlyr()); draw(getActPlyr()); finish(true);},
 				),
 			genActionPhase(
 				"Choose any number of Cards from your Hand to Remove from the Game",
 				["data_network"],
-				() => offer( true, true, [ "hand" ], "choices", finish),
+				f=> offer( true, true, [ "hand" ], "choices", finish),
 				),
 			genActionPhase(
 				"Removing the Selected Cards from the Game",
 				["data_network"],
-				() => {
+				f=> {
 					if (getChoice() == "Skip") finish();
 					let { game: game, game: { choices: choices, acting_player: player } } = get();
 					player = game.players[game.actPlyrIndx];
@@ -704,7 +704,7 @@
 				{
 				start: [
 					{
-					"set active player": () => {
+					"set active player": f=> {
 						if (game.started) {
 						game.started = true;
 						game.passt = false;
@@ -732,7 +732,7 @@
 					}
 					},
 					{
-					Productivity: () => {
+					Productivity: f=> {
 						if ( getActPlyr().permanents.filter(el => el.type == "productivity").length != 0 ) {
 						getActPlyr().actionrolesequence = "aar";
 						}
@@ -740,7 +740,7 @@
 					}
 					},
 					{
-					"Choose an Order to Perform Your Action and Role Phases": () => {
+					"Choose an Order to Perform Your Action and Role Phases": f=> {
 						if (getActPlyr().permanents.filter(el => el.type == "logistics" ).length != 0 ) {
 						let options = [
 							"Action Phase then Role Phase",
@@ -760,7 +760,7 @@
 					}
 					},
 					{
-					Logistics: () => {
+					Logistics: f=> {
 						if (getActPlyr().permanents.filter(el => el.type == "logistics").length != 0 ) {
 						if (getChoice() == "Action Phase then Role Phase" ) {
 							getActPlyr().actionrolesequence = "ar";
@@ -784,12 +784,12 @@
 				{
 				action: [
 					{
-						"Choose an Action to Play": () => {
+						"Choose an Action to Play": f=> {
 						offer( true, false, [ "hand" ], "choices", finish );
 						}
 					},
 					{
-						"Playing your Action": () => {
+						"Playing your Action": f=> {
 						if (getChoice() == "Skip") {
 							finish();
 						} else {
@@ -807,12 +807,12 @@
 				{
 				role: [
 					{
-					"Choose a Role Card to Lead with": () => {
+					"Choose a Role Card to Lead with": f=> {
 						offer( false , false, [ "rolecards" ], "choices", finish );
 					}
 					},
 					{
-					"Performing your Role": () => {
+					"Performing your Role": f=> {
 						let card = getChoices()[0];
 						if (game.stacks.pilecount[card.type] >= 1) {
 							if (card.type=="producetrade"){
@@ -843,12 +843,12 @@
 				{
 				lead: [
 					{
-						"Choose cards from your hand to Boost the effectiveness of your Role": () => {
+						"Choose cards from your hand to Boost the effectiveness of your Role": f=> {
 							offer( true , true, [ "hand" ], "choices", finish );
 						}
 					},
 					{
-						"Boosting your Role": () => {
+						"Boosting your Role": f=> {
 							if (getChoice() == "Skip") {
 								finish();
 							} else {
@@ -864,13 +864,13 @@
 					},
 					...getLeadCorePhases(),
 					{
-					"Pass the device to the Next Player": () => {
+					"Pass the device to the Next Player": f=> {
 						game.zone = "";
 						game.passp = true;
 					}
 					},
 					{
-					"You passed Priority": () => {
+					"You passed Priority": f=> {
 						game.passp = false;
 						finish(true);
 					}
@@ -880,12 +880,12 @@
 				{
 				follow: [
 					{
-					"Choose between Following or Dissent the Leading Role": () => {
+					"Choose between Following or Dissent the Leading Role": f=> {
 						simpleOffer(["dissent",getLeadPlyr().activerole]);
 					}
 					},
 					{
-					Dissenting: () => {
+					Dissenting: f=> {
 						getActPlyr().activerole = getChoice();
 						if ( getActPlyr().activerole != "dissent" ) {
 						let card = getChoices()[0];
@@ -915,7 +915,7 @@
 					}
 					}, //will auto pass to next phase if follow has been selected
 					{
-					"Choose cards from your hand to Boost the effectiveness of your Role": () => {
+					"Choose cards from your hand to Boost the effectiveness of your Role": f=> {
 						if ( getActPlyr() .activerole == "dissent" ) {
 							finish();
 						} else {
@@ -924,7 +924,7 @@
 					}
 					},
 					{
-					"Boosting your Role": () => {
+					"Boosting your Role": f=> {
 						if ( getActPlyr().activerole == "dissent" ) {
 							finish();
 						} else {
@@ -944,13 +944,13 @@
 					},
 					...getFollowCorePhases(),
 					{
-					"Pass the device to the Next Player": () => {
+					"Pass the device to the Next Player": f=> {
 						game.zone = "";
 						game.passp = true;
 					}
 					},
 					{
-					"You passed Priority": () => {
+					"You passed Priority": f=> {
 						game.passp = false;
 						finish(true);
 					}
@@ -962,7 +962,7 @@
 				{
 				discard: [
 					{
-					"Would you like to Mobilize against a Planet": () => {
+					"Would you like to Mobilize against a Planet": f=> {
 						if ( getActPlyr() .activeaction != "mobilization" ) {
 						finish();
 						} else {
@@ -971,7 +971,7 @@
 					}
 					},
 					{
-					"Choose a Planet to Mobilize Against": () => {
+					"Choose a Planet to Mobilize Against": f=> {
 						if ( getActPlyr() .activeaction != "mobilization" ||  getChoice() != "mobilize" ) {
 						finish();
 						} else {
@@ -980,7 +980,7 @@
 					}
 					},
 					{
-					"Mobalizing against your Planet": () => {
+					"Mobalizing against your Planet": f=> {
 						if ( getActPlyr().activeaction != "mobilization" ) {
 						finish();
 						} else {
@@ -990,7 +990,7 @@
 					}
 					},
 					{
-					"Would you like to Streamline Your Empire": () => {
+					"Would you like to Streamline Your Empire": f=> {
 						if (getActPlyr().permanents.filter(el => el.type == "streamlining" ).length == 0
 						) {
 						finish();
@@ -1000,7 +1000,7 @@
 					}
 					},
 					{
-					"Choose a Card from Your Hand to Remove from the Game": () => {
+					"Choose a Card from Your Hand to Remove from the Game": f=> {
 						if ( getActPlyr().permanents.filter(el => el.type == "streamlining").length == 0 || getChoice() != "Streamline Empire"
 						) {
 						finish();
@@ -1010,7 +1010,7 @@
 					}
 					},
 					{
-					"Streamlining Your Empire": () => {
+					"Streamlining Your Empire": f=> {
 						if ( getActPlyr().permanents.filter(el => el.type == "streamlining" ).length == 0 || getChoice() != "Streamline Empire" || getChoice() == "Skip" ) {
 						finish();
 						} else {
@@ -1019,7 +1019,7 @@
 					}
 					},
 					{
-					"Would you like to Utilize Your Empire's Hyperefficiency": () => {
+					"Would you like to Utilize Your Empire's Hyperefficiency": f=> {
 						if ( getActPlyr().permanents.filter(el => el.type == "hyperefficiency" ).length == 0 ) {
 						finish();
 						} else {
@@ -1028,7 +1028,7 @@
 					}
 					},
 					{
-					"Choose a Card from Your Hand to Remove from the Game": () => {
+					"Choose a Card from Your Hand to Remove from the Game": f=> {
 						if ( getActPlyr().permanents.filter(el => el.type == "hyperefficiency").length == 0 || getChoice() != "Utilize Hyperefficiency" ) {
 						finish();
 						} else {
@@ -1037,7 +1037,7 @@
 					}
 					},
 					{
-					"Your Empire is Hyperefficient": () => {
+					"Your Empire is Hyperefficient": f=> {
 						if ( getActPlyr().permanents.filter(el => el.type == "hyperefficiency").length == 0 || getChoice() != "Utilize Hyperefficiency" || getChoice() == "Skip" ) {
 						finish();
 						} else {
@@ -1046,12 +1046,12 @@
 					}
 					},
 					{
-					"Choose any Cards you would like to Discard": () => {
+					"Choose any Cards you would like to Discard": f=> {
 						offer( true , true, [ "hand" ], "choices", finish );
 					}
 					},
 					{
-					"Discarding your Selected Cards": () => {
+					"Discarding your Selected Cards": f=> {
 						if (getChoice() == "Skip") {
 						finish();
 						} else {
@@ -1069,7 +1069,7 @@
 				{
 				cleanup: [
 					{
-					"Drawing up to your Hand Size": () => {
+					"Drawing up to your Hand Size": f=> {
 						cleanup();
 						let handsize = getActPlyr().handsize;
 						for (let index in getActPlyr().settled_planets) {
@@ -1091,7 +1091,7 @@
 					}
 					},
 					{
-					"Pass the device to the Next Player": () => {
+					"Pass the device to the Next Player": f=> {
 						game.zone = "";
 						game.displayinfo.showoptiontoskip = false;
 						game.displayinfo.alwMulti = false;
@@ -1100,7 +1100,7 @@
 					}
 					},
 					{
-					"You passed the Turn": () => {
+					"You passed the Turn": f=> {
 						game.passt = false;
 						finish(true);
 					}
@@ -1136,26 +1136,26 @@
 	
 	})
 	///////////////////////////////////////////////////////////////////////////////
-	let  	clearOptions = () => game.options = [],
-			offerUnsettled = () => offer( false,  false, ["unsettled_planets"], "subchoices", finish),
-            getActionCardPhases = () => actioncardphases,
-            getActvActn = () => getActPlyr().activeaction,
-            getActvRole = () => getActPlyr().activerole,
-            getChoice = () => game.choices[0].name,
-            getChoices = () => game.choices,
-            getSubChoice = () => getSubChoices()[0],
-            getSubChoices = () => game.subchoices,
+	let  	clearOptions = f=> game.options = [],
+			offerUnsettled = f=> offer( false,  false, ["unsettled_planets"], "subchoices", finish),
+            getActionCardPhases = f=> actioncardphases,
+            getActvActn = f=> getActPlyr().activeaction,
+            getActvRole = f=> getActPlyr().activerole,
+            getChoice = f=> game.choices[0].name,
+            getChoices = f=> game.choices,
+            getSubChoice = f=> getSubChoices()[0],
+            getSubChoices = f=> game.subchoices,
             finish = (cond=false) => phasefinishfunction(cond),
-            getActPlyr = () => game.players[game.actPlyrIndx],
-            getLeadPlyr = () => game.players[game.leadPlyrIndx],
+            getActPlyr = f=> game.players[game.actPlyrIndx],
+            getLeadPlyr = f=> game.players[game.leadPlyrIndx],
             simpleOffer = (choices) => offer( false, false, ["options", choices.reduce((acc,cur)=>[...acc,{name:cur}],[])], "choices", finish),
-            wrappedOffer = (choices) => () => simpleOffer(choices),
-            getActionCorePhases = () => corephases.reduce((acc,cur)=>[...acc,cur.actn],[]).reduce((acc,cur)=>[...acc,...cur],[]),
-            getLeadCorePhases =   () => corephases.reduce((acc,cur)=>[...acc,cur.lead],[]).reduce((acc,cur)=>[...acc,...cur],[]),
-            getFollowCorePhases = () => corephases.reduce((acc,cur)=>[...acc,cur.fllw],[]).reduce((acc,cur)=>[...acc,...cur],[]),
-            genActionPhase = (name,actions,phase,choices=[],cond=false) => ({ [name] : ()=>{ if ( actions.includes(getActvActn()) && (choices.length==0 || choices.includes(getChoice()))) { phase() } else { finish(cond) } }}),
-            genLeadPhase   = (name,actions,phase,choices=[],cond=false) => ({ [name] : ()=>{ if ( actions.includes(getActvRole()) && (choices.length==0 || choices.includes(getChoice()))) { phase() } else { finish(cond) } }}),
-            genFollowPhase = (name,actions,phase,choices=[],cond=false) => ({ [name] : ()=>{ if ( actions.includes(getActvRole()) && (choices.length==0 || choices.includes(getChoice()))) { phase() } else { finish(cond) } }}),
+            wrappedOffer = (choices) => f=> simpleOffer(choices),
+            getActionCorePhases = f=> corephases.reduce((acc,cur)=>[...acc,cur.actn],[]).reduce((acc,cur)=>[...acc,...cur],[]),
+            getLeadCorePhases =   f=> corephases.reduce((acc,cur)=>[...acc,cur.lead],[]).reduce((acc,cur)=>[...acc,...cur],[]),
+            getFollowCorePhases = f=> corephases.reduce((acc,cur)=>[...acc,cur.fllw],[]).reduce((acc,cur)=>[...acc,...cur],[]),
+            genActionPhase = (name,actions,phase,choices=[],cond=false) => ({ [name] : f=>{ if ( actions.includes(getActvActn()) && (choices.length==0 || choices.includes(getChoice()))) { phase() } else { finish(cond) } }}),
+            genLeadPhase   = (name,actions,phase,choices=[],cond=false) => ({ [name] : f=>{ if ( actions.includes(getActvRole()) && (choices.length==0 || choices.includes(getChoice()))) { phase() } else { finish(cond) } }}),
+            genFollowPhase = (name,actions,phase,choices=[],cond=false) => ({ [name] : f=>{ if ( actions.includes(getActvRole()) && (choices.length==0 || choices.includes(getChoice()))) { phase() } else { finish(cond) } }}),
             genEmptyCard = (type, name, symbols, extras={}) => ({ type: type,selected: false, name: name, selected: false, icons: {...{ survey: 0, warfare: 0, colonize: 0, produce: 0, trade: 0, research: 1},...symbols},image: null, ...extras}),
             tallyIcons = (dest,src) => ["survey","warfare","trade","produce","research",/*"colonize"*/].forEach( icon => dest.icons[icon] += src.icons[icon] ),
             handToLimboWithLimboDuplicatePurge = (plyr,card) => { rmFromField("limbo",plyr,card); handToLimbo(plyr,card);},
@@ -1166,19 +1166,19 @@
             boostWithIcons = (plyr, src) => Object.keys(src.icons).forEach((icon) => plyr.bstIcons[icon]+=src.icons[icon]),
             resetIconBoost = (plyr) => plyr.bstIcons = {survey: 0, warfare: 0, colonize: 0, produce: 0, trade: 0, research: 0 },
             resetSelection = (selected) => selected.forEach((s) => s.selected = false),
-            offlineOrIsClientTurn = () => (cltName == getActPlyr().name || !lobby.online),
+            offlineOrIsClientTurn = f=> (cltName == getActPlyr().name || !lobby.online),
             setChoice = (chc) => game[game.displayinfo.choicelabel] = chc,
-            cleanOptions = () => game.options=[],
-            displayPlanets = () => game.displayinfo.center_or_planets = false,
-            displayCenter = () => game.displayinfo.center_or_planets = true,
-            clearChoices = () => game[game.displayinfo.choicelabel] = [],
+            cleanOptions = f=> game.options=[],
+            displayPlanets = f=> game.displayinfo.center_or_planets = false,
+            displayCenter = f=> game.displayinfo.center_or_planets = true,
+            clearChoices = f=> game[game.displayinfo.choicelabel] = [],
             setDisplayInfo = (zone,multiple,skippable,label) => game.displayinfo = {...game.displayinfo,...{zone:zone,alwMulti:multiple,showoptiontoskip:skippable,choicelabel:label}},
             getAllCards = (plyr) => [...plyr.deck,...plyr.discard, ...plyr.limbo, ...plyr.hand],
-            isPlanet = (p) => p.type=='planet' || p.type=='fertile' || p.type=='metallic' || p.type=='advanced',
+            isPlanet = p => p.type=='planet' || p.type=='fertile' || p.type=='metallic' || p.type=='advanced',
             chkForPerm = (perm) => getActPlyr().permanents.filter( (el)=>el.type==perm ).length != 0,
             range = (min,max) => (min <= max) ? [...range(min, max-1),max] : [],
-            singleCllBck = (cllBck,e,func) => () => {func(); document.removeEventListener(e,this); cllBck();},
-            produceTradeHelper = (filled,planets,resources,func=()=>{}) => { let prd = {blue:0,green:0,purple:0,red:0}; planets.forEach((planet) =>  planet.production_zones.forEach((zone)=>{     if (!zone.filled && resources > 0) {         zone.filled = filled;         prd[zone.type]++;         resources--;         func()     }  }) );return prd;};
+            singleCllBck = (cllBck,e,func) => f=> {func(); document.removeEventListener(e,this); cllBck();},
+            produceTradeHelper = (filled,planets,resources,func=f=>{}) => { let prd = {blue:0,green:0,purple:0,red:0}; planets.forEach((planet) =>  planet.production_zones.forEach((zone)=>{     if (!zone.filled && resources > 0) {         zone.filled = filled;         prd[zone.type]++;         resources--;         func()     }  }) );return prd;};
 	
 	let choosewrapper = (c,zone) => {
 		if ((game.zone == zone) && offlineOrIsClientTurn()){
@@ -1243,24 +1243,24 @@
 
 	};
 	let discard = (source_array, destination_array, id) => {
-		let toRemove = source_array.find((e) => id == e.id);
+		let toRemove = source_array.find(e=> id == e.id);
 		destination_array = [...destination_array,toRemove];
-		source_array = source_array.filter((e) => e.id != toRemove.id);
+		source_array = source_array.filter(e=> e.id != toRemove.id);
 	};
 	//draw deck->hand
-	let totalinfluence = () => {
+	let totalinfluence = f=> {
 		game.players.forEach((plyr) => {
 			plyr.influence = plyr.influence.reduce((acc,cur) => acc + cur,0) + getAllCards(plyr).reduce((acc,cur) => acc + cur.influence);
 		}) ;
 	};
-	let endgame = () => {
+	let endgame = f=> {
 		//display victor
 		let scores = game.players.map(e => e.influence);
 		let winner = '';
 		let highest = scores[0];
-		game.players.map((e) => { if ( highest < e.influence ) { winner = e.name; highest = e.influence; } } );
+		game.players.map(e=> { if ( highest < e.influence ) { winner = e.name; highest = e.influence; } } );
 	};
-	let checkforendgame = () => {
+	let checkforendgame = f=> {
 		let depletedstacks = game.stacks.pilecount.reduce((acc,cur) => acc + (cur < 1) ? 1 : 0,0);
 		let stacklimit = (game.number_of_players == 1 || game.number_of_players == 2) ? 1 : 2 ;
 		return ( stacklimit <= depletedstacks || game.influence.length == 0);
@@ -1278,9 +1278,9 @@
 		return player;
 	};
 	let play = (source_array, destination_array, finDest, id) => {
-		let toRemove = source_array.find((e) => id == e.id);
+		let toRemove = source_array.find(e=> id == e.id);
 		destination_array = [...destination_array,{...toRemove,finDest:finDest}];
-		source_array = source_array.filter((e) => e.id != toRemove.id);
+		source_array = source_array.filter(e=> e.id != toRemove.id);
 	};
 	let gen_research_card = (name) => {
 		return {
@@ -1290,7 +1290,7 @@
 			icons:{'survey':0,'warfare':0,'colonize':0,'produce':0,'trade':0,'research':0},
 			planet_requirements:{'advanced':0, 'metallic':0, 'fertile':0},
 			research_cost:0,
-			action:()=>{},
+			action:f=>{},
 			is_permanent:false,
 			is_doublesided:false,
 			imgurl:"/images/",
@@ -1333,7 +1333,7 @@
 			fertilegrounds:			function(){return this.research(5).fertile(2).influence(2).permanent().doubleside().img('fertilegrounds').icons({'research':1,'colonize':1,'produce':1,});},
 		}
 	};
-	let gen_research_deck = () => {
+	let gen_research_deck = f=> {
 		game.research_deck =[
 			gen_research_card('improved_production').metallic(1).icons({'warfare':1,'produce':1}).improved_production().img("wp.png"),
 			gen_research_card('improved_production').metallic(1).icons({'survey':1,'produce':1}).improved_production().img("sp.png"),
@@ -1437,7 +1437,7 @@
 			zone:function(zone){this.production_zones.push({type:zone, filled:false});return this;},
 		};
 	};
-	let genplanetdeck = () => { 
+	let genplanetdeck = f=> { 
 		game.planet_deck = knuthshuffle([
 			//fertile planets
 			genplanet('MISHBURR ITO-A').fertile().settle(5).conquer(4).zone('food')              .influence(3).icon('produce')   ,
@@ -1479,19 +1479,19 @@
 			genplanet('PIEDRA SECA').metallic().settle(2).conquer(2).influence(2).zone('metallic'),
 		])   
 	};
-	let cleanup = () => {
+	let cleanup = f=> {
 		getActPlyr().limbo.forEach(card => {
 			getActPlyr()[card.finDest] = [ ...getActPlyr()[card.finDest], card ];
 		});
 	};
 	let purchase = (src, dest, finDest, id) => { // duplicate of discard & duplicate of play
-		let toRemove = src.find((e) => id == e.id);
+		let toRemove = src.find(e=> id == e.id);
 		dest = [...dest,{...toRemove,finDest:finDest}];
-		src = src.filter((e) => e.id != toRemove.id);
+		src = src.filter(e=> e.id != toRemove.id);
 	};
 	let remove_from_game = (source_array, toRemove) => { //remove_from_game hand->exile\
 		toRemove.finDest="exile";
-		return source_array.filter((e) => e.id != toRemove.id);
+		return source_array.filter(e=> e.id != toRemove.id);
 	};
 	let present_as_choice = (options) => game.options = options;
 	let settle_colonies = (planet, plyr) => {
@@ -1509,7 +1509,7 @@
 		
 	};
 	//pass_turn leadingplayer->nextplayer
-	let pass_turn = () => {
+	let pass_turn = f=> {
 		if (!lobby.online || cltName == getActPlyr().name ){
 			game.passt=false;
 			game.actPlyrIndx = game.leadPlyrIndx = (game.leadPlyrIndx+1)%game.number_of_players;
@@ -1519,7 +1519,7 @@
 		}
 	};
 	//pass_priority actingplayer->nextplayer
-	let pass_priority = () => {
+	let pass_priority = f=> {
 		if (offlineOrIsClientTurn()){
 			game.passp=false;
 			game.actPlyrIndx = (game.actPlyrIndx+1)%game.number_of_players;
@@ -1529,13 +1529,13 @@
 	};
 	//determine_number_of_players logic->options->choice->number_of_players
 	let determine_number_of_players = (callback) => {
-		document.addEventListener('choicemade',singleCllBck( callback, 'choicemade', () => game.number_of_players = game.choices));
+		document.addEventListener('choicemade',singleCllBck( callback, 'choicemade', f=> game.number_of_players = game.choices));
 		present_as_choice(range( game.minPlyrs, game.maxPlyrs));
 	};
 	//produce poduction_pile->host
 	let produce = (planets, resources=1) => produceTradeHelper(true,planets,resources);
 	//trade host->production_pile, influence_pile->player_influence
-	//let trade = (planets, player, resources=1) => produceTradeHelper(false,planets,resources,()=>player.influence.push(game.influence.pop()));
+	//let trade = (planets, player, resources=1) => produceTradeHelper(false,planets,resources,f=>player.influence.push(game.influence.pop()));
 	let trade = (plnt,plyr,res)=>{
 		let prd = { blue: 0, green: 0, purple: 0, red: 0  };
 		if (res < 1) return prd;
@@ -1573,7 +1573,7 @@
 	let colonize = (planet, source_array, card, isRole=false) => {
 		let l = (isRole) ? getActPlyr().bstIcons.colonize : 1;
 		for (let i = 0; i < l; i++){
-			let toRemove = source_array.find((e) => card.type == e.type && e.finDest!='exile');
+			let toRemove = source_array.find(e=> card.type == e.type && e.finDest!='exile');
 			planet.hosted_colonies = [...planet.hosted_colonies,toRemove];
 			source_array = source_array.filter((e,i) => e.id != toRemove.id);
 		}
@@ -1607,14 +1607,14 @@
 		game.displayinfo.alwMulti = true;
 		game.displayinfo.showoptiontoskip = true;
 		present_as_choice(player.hand);
-		document.addEventListener('choicemade',singleCllBck(()=>{},'choicemade',()=>boost(game.choices, player)));
+		document.addEventListener('choicemade',singleCllBck(f=>{},'choicemade',f=>boost(game.choices, player)));
 	};
 	let select_via_id = (source, id) => {
 		let temp = source.find(p=>p.id==id);
 		source = source.filter(p=>p.id!=id);
 		return temp
 	};
-	let boostrolewithcards = (choices, callback=()=>{}) => {
+	let boostrolewithcards = (choices, callback=f=>{}) => {
 		if (choices[0].name == 'Skip') return;
 		choices.forEach((card)=>{
 			boostWithIcons(getActPlyr(),card);
@@ -1622,11 +1622,11 @@
 		});
 		callback();
 	};
-	let gen_unique_id = () => {
+	let gen_unique_id = f=> {
 		game.nonce++;	
 		return game.nonce;
 	};
-	let performleaderrole = (callback=()=>{}) => getActPlyr().activerole.role.role.leader(callback);
+	let performleaderrole = (callback=f=>{}) => getActPlyr().activerole.role.role.leader(callback);
 	let performfollowerrole = (callback=null) => {
 		getActPlyr().activerole.set(game.players[game.leadPlyrIndx].activerole.role);
 		getActPlyr().activerole.role.role.follower(callback);
@@ -1677,20 +1677,20 @@
 		if (send) sendstate();
 		game.nextphase();
 	};
-	let gengamesequence = () => {
+	let gengamesequence = f=> {
 		let _gamesequence=[];
 		_gamesequence = gshelper([...game.gamephases[0].start],_gamesequence);
 		//ar. ra, aar, ara, raa
-		_gamesequence = gshelper([...game.gamephases[1].action],_gamesequence, ()=>{return getActPlyr().actionrolesequence=='aar'});
-		_gamesequence = gshelper([...game.gamephases[1].action],_gamesequence, ()=>{return getActPlyr().actionrolesequence=='aar' || getActPlyr().actionrolesequence=='ar'  });
+		_gamesequence = gshelper([...game.gamephases[1].action],_gamesequence, f=>{return getActPlyr().actionrolesequence=='aar'});
+		_gamesequence = gshelper([...game.gamephases[1].action],_gamesequence, f=>{return getActPlyr().actionrolesequence=='aar' || getActPlyr().actionrolesequence=='ar'  });
 		
 		_gamesequence = gshelper([...game.gamephases[2].role],_gamesequence);
 		_gamesequence = gshelper([...game.gamephases[3].lead],_gamesequence);
 		for (let i = 1; i<game.number_of_players; i++){
 			_gamesequence = gshelper([...game.gamephases[4].follow],_gamesequence);
 		}
-		_gamesequence = gshelper([...game.gamephases[1].action],_gamesequence, ()=>{return getActPlyr().actionrolesequence=='raa' || getActPlyr().actionrolesequence=='ara'  });
-		_gamesequence = gshelper([...game.gamephases[1].action],_gamesequence, ()=>{return getActPlyr().actionrolesequence=='raa'});
+		_gamesequence = gshelper([...game.gamephases[1].action],_gamesequence, f=>{return getActPlyr().actionrolesequence=='raa' || getActPlyr().actionrolesequence=='ara'  });
+		_gamesequence = gshelper([...game.gamephases[1].action],_gamesequence, f=>{return getActPlyr().actionrolesequence=='raa'});
 
 		_gamesequence = gshelper([...game.gamephases[5].discard],_gamesequence);
 		_gamesequence = gshelper([...game.gamephases[6].cleanup],_gamesequence);
@@ -1705,7 +1705,7 @@
 				for (key in jsobj){
 					func=jsobj[key];
 				}
-				item[key] = ()=>{
+				item[key] = f=>{
 					if (wrapperfunction()){
 						func();
 					} else {
@@ -1719,7 +1719,7 @@
 		}
 		return destination_array;
 	};
-	let gennewdeck = () => {
+	let gennewdeck = f=> {
 		let deck =  [
 			Object.assign({'id':gen_unique_id()}, game.stacks.rolecards[game.stacks.survey]),
 			Object.assign({'id':gen_unique_id()}, game.stacks.rolecards[game.stacks.survey]),
@@ -1735,7 +1735,7 @@
 				type : 'politics',
 				'selected':false,
 				action : (callback)=>{
-					let callbackwrapper = ()=>{ 	
+					let callbackwrapper = f=>{ 	
 						document.removeEventListener('choicemade',callbackwrapper);
 						politics(getActPlyr().activeaction, game.choices[0], getActPlyr());
 						callback();
@@ -1756,17 +1756,17 @@
 		];
 		return deck;
 	};
-	let phaseincrement = () => game.curPhs++;
+	let phaseincrement = f=> game.curPhs++;
 	let newgame = (number_of_players) => {
 		lobby.online=true;
 		initgame(number_of_players);
-		initSocket(()=>ws.emit('message',jstr({'header':'newgame',game:game,sets:lobby.sets,number_of_players:game.players.length})));
+		initSocket(f=>ws.emit('message',jstr({'header':'newgame',game:game,sets:lobby.sets,number_of_players:game.players.length})));
 		
 	};
 	let initSocket = (func) => {
-		let ping = () => { setTimeout( () => { ws.emit('message',jstr({header:'ping'})); ping(); },2000); };
+		let ping = f=> { setTimeout( f=> { ws.emit('message',jstr({header:'ping'})); ping(); },2000); };
 		ws = io();
-		ws.on('connect',()=>{ log('connected');
+		ws.on('connect',f=>{ log('connected');
 			ws.on('id',(msg)=>{ log('id');
 				log(jprs(msg));
 				game = {...game,
@@ -1809,14 +1809,14 @@
 			ping();
 		})
 	}
-	let fetchexistinggames = () => initSocket(()=> ws.emit('message',jstr({'header':'fetchexisting'})));
+	let fetchexistinggames = f=> initSocket(f=> ws.emit('message',jstr({'header':'fetchexisting'})));
 	let enterexistinggame = (g) => {
 		let slot = g.players.findIndex(p=>p.available);
 		if (!lobby.init) initgame(g.number_of_players); 
 		ws.emit('message',jstr({'header':'enterexisting',game_id:g.game_id,player_name:lobby.screename,slot:slot}));
 	};
-	let sendstate = () => lobby.online && ws.emit('message',jstr({...game,'header':'set','sender':lobby.player_id}));
-	let registerws = () => ws.emit('message',jstr({...game,'header':'register','sender':lobby.player_id}));
+	let sendstate = f=> lobby.online && ws.emit('message',jstr({...game,'header':'set','sender':lobby.player_id}));
+	let registerws = f=> ws.emit('message',jstr({...game,'header':'register','sender':lobby.player_id}));
 	let initgame = (number_of_players) => {
 		game.label = cltName;
 		lobby.init=true;
@@ -1831,16 +1831,16 @@
 			gen_player_names();
 		} 
 	};
-	let gen_player_names = () => game.players.forEach((plyr,i)=>plyr.name = 'Player '+(i+1));
-	let toggle_center_or_planets = () => game.displayinfo.center_or_planets = !game.displayinfo.center_or_planets;
-	let toggle_research = () => game.displayinfo.center_or_research = !game.displayinfo.center_or_research;
-	let togglepasstoplayer = () => {
+	let gen_player_names = f=> game.players.forEach((plyr,i)=>plyr.name = 'Player '+(i+1));
+	let toggle_center_or_planets = f=> game.displayinfo.center_or_planets = !game.displayinfo.center_or_planets;
+	let toggle_research = f=> game.displayinfo.center_or_research = !game.displayinfo.center_or_research;
+	let togglepasstoplayer = f=> {
 		game.passtoplayer = !game.passtoplayer;
 		openFullscreen();
 	};
 	let class_gen = (zone, item) => (game.zone==zone) ? ((item.selected) ? "selected" : "selectable" )  : "bordered";
 	
-	let gen_game_id = () => {
+	let gen_game_id = f=> {
 		game.game_id ='';
 		game.game_id += Math.random().toString(36).replace(/[^a-z]+/g, '').substr(0, 10);
 	};
@@ -1860,8 +1860,8 @@
 		}
 		return array;
 	};
-	let drag = (evt,item) => () => game.displayinfo.dragged=item;
-	let drop = (evt,zone) => () => {
+	let drag = (evt,item) => f=> game.displayinfo.dragged=item;
+	let drop = (evt,zone) => f=> {
 		let el = document.getElementById('playedcards').getBoundingClientRect();
 		if (evt.changedTouches[0].clientX > el.left
 		&& evt.changedTouches[0].clientX < el.left+ el.width
@@ -1874,7 +1874,7 @@
 		let ll = document.querySelector('#dragged');
 		ll.style.visibility="hidden";
 	};
-	let move = (evt, img) => () => {
+	let move = (evt, img) => f=> {
 		let touch = evt.targetTouches[0];
 		// Place element where the finger is
 		let el = document.querySelector('#dragged');
@@ -1887,13 +1887,13 @@
 		el.style.zIndex = "4";
 		el.style.backgroundImage="url('"+img+"')";
 	};
-	let newoffline = () => {
+	let newoffline = f=> {
 		lobby.online=false;
 		game.curPhs = 0;
 		initgame(2);
 		finish();;
 	};
-	let openFullscreen = () => {
+	let openFullscreen = f=> {
 		let elem = document.getElementById("screen");
 		if (elem.requestFullscreen) {
 		elem.requestFullscreen();
@@ -2206,39 +2206,39 @@
 					{#if game.zone=='research' || !game.displayinfo.center_or_research}
 						<div class="zone researchrow">
 							{#each game.research_deck as card (card.id)}
-								<Card on:click={()=>choosewrapper(card,'research')} selectable={(game.zone=='research')} {card}/>
+								<Card on:click={f=>choosewrapper(card,'research')} selectable={(game.zone=='research')} {card}/>
 							{/each}
 						</div>
 					{:else if game.displayinfo.center_or_planets}
 						<div class="flex zone centerrow">
 							{#each game.stacks.rolecards as card (card.name)}
-								<Card {card} selectable={game.zone=='rolecards'} pilecount="{game.stacks.pilecount[card.type]}" on:click="{()=>choosewrapper(card,'rolecards')}" on:tap="{()=>choosewrapper(card,'rolecards')}" on:touchmove="{(event)=>move(event, '/images/'+card.type+'.png','rolecards')}" on:touchstart="{(event)=>drag(event,card,'rolecards')}" on:touchend="{(event)=>drop(event,'rolecards')}"/>
+								<Card {card} selectable={game.zone=='rolecards'} pilecount="{game.stacks.pilecount[card.type]}" on:click="{f=>choosewrapper(card,'rolecards')}" on:tap="{f=>choosewrapper(card,'rolecards')}" on:touchmove="{(event)=>move(event, '/images/'+card.type+'.png','rolecards')}" on:touchstart="{(event)=>drag(event,card,'rolecards')}" on:touchend="{(event)=>drop(event,'rolecards')}"/>
 							{/each}
 						</div>
 					{/if}
 					{#if !game.displayinfo.center_or_planets}
 						<div class="flex zone centerrow">
 							{#each player.unsettled_planets as planet (planet.id)}
-								<PlanetCard planet={planet} on:click={()=>choosewrapper(planet,'unsettled_planets')} on:tap={()=>choosewrapper(planet,'unsettled_planets')}/>
+								<PlanetCard planet={planet} on:click={f=>choosewrapper(planet,'unsettled_planets')} on:tap={f=>choosewrapper(planet,'unsettled_planets')}/>
 							{/each}
 							{#each [...player.settled_planets, ...player.conquered_planets] as planet (planet.id)}
-								<PlanetCard planet={planet} selected={game.zone=='settled_&_conquered_planets'} on:click={()=>choosewrapper(planet,'settled_&_conquered_planets')} on:tap={()=>choosewrapper(planet,'settled_&_conquered_planets')} />
+								<PlanetCard planet={planet} selected={game.zone=='settled_&_conquered_planets'} on:click={f=>choosewrapper(planet,'settled_&_conquered_planets')} on:tap={f=>choosewrapper(planet,'settled_&_conquered_planets')} />
 							{/each}
 						</div>
 					{/if}
 					<!-- played cards-->
 					<div id="playedcards" class="flex zone playedcards" >
 						<div style="margin-right:auto" class="selectable pass" 
-							on:click={(game.displayinfo.showoptiontoskip)?()=>choose([{name:'Skip'}]):()=>{}}
-							on:tap={(game.displayinfo.showoptiontoskip)?()=>choose([{name:'Skip'}]):()=>{}}>
+							on:click={(game.displayinfo.showoptiontoskip)?f=>choose([{name:'Skip'}]):f=>{}}
+							on:tap={(game.displayinfo.showoptiontoskip)?f=>choose([{name:'Skip'}]):f=>{}}>
 							{(game.displayinfo.showoptiontoskip)?'[Choose None]':'[______]'}
 						</div>
 						{#each game.players[game.actPlyrIndx].limbo as card (card.id)}
-							<Card mini={true} on:click={()=>unchoose(card)} on:tap={()=>unchoose(card)} {card}/>
+							<Card mini={true} on:click={f=>unchoose(card)} on:tap={f=>unchoose(card)} {card}/>
 						{/each}
 						<div style="margin-left:auto" class="selectable pass" 
-							on:click={(game.passp)?()=>pass_priority():(game.passt)?()=>pass_turn():(game.displayinfo.alwMulti && game.choices.length>0)?()=>choose(game[game.displayinfo.choicelabel]):()=>{}}
-							on:tap={(game.passp)?()=>pass_priority():(game.passt)?()=>pass_turn():(game.displayinfo.alwMulti && game.choices.length>0)?()=>choose(game[game.displayinfo.choicelabel]):()=>{}}>
+							on:click={(game.passp)?f=>pass_priority():(game.passt)?f=>pass_turn():(game.displayinfo.alwMulti && game.choices.length>0)?f=>choose(game[game.displayinfo.choicelabel]):f=>{}}
+							on:tap={(game.passp)?f=>pass_priority():(game.passt)?f=>pass_turn():(game.displayinfo.alwMulti && game.choices.length>0)?f=>choose(game[game.displayinfo.choicelabel]):f=>{}}>
 							{(game.passp)?'[Pass to <br> Next Player]':(game.passt)?'[End Turn]':(game.displayinfo.alwMulti && game.choices.length>0)?'[Choose Selected]':'[______]'}
 						</div>
 					</div>
@@ -2248,7 +2248,7 @@
 						<div class='bordered deck'>{player.deck.length}</div>
 						<div class='hand'>
 							{#each player.hand as card (card.id)}
-								<Card card={card} mini={true} selectable={game.zone=='hand'} on:touchstart={(event)=>drag(event, card,'hand')} on:touchend={(event)=>drop(event,'hand')} on:touchmove={(event)=>move(event, card.imgurl,'hand')} on:click={()=>{log(card);choosewrapper(card,'hand');}} on:tap={()=>choosewrapper(card,'hand')} />
+								<Card card={card} mini={true} selectable={game.zone=='hand'} on:touchstart={(event)=>drag(event, card,'hand')} on:touchend={(event)=>drop(event,'hand')} on:touchmove={(event)=>move(event, card.imgurl,'hand')} on:click={f=>{log(card);choosewrapper(card,'hand');}} on:tap={f=>choosewrapper(card,'hand')} />
 							{/each}
 						</div>
 						<div class="bordered discard">{player.discard.length}</div>
@@ -2260,10 +2260,10 @@
 				<div class="{( game.options[0] !== undefined && game.options[0].type !== undefined) ? 'talloptions' : 'options'}">
 					{#each game.options as option (option.name)}
 						{#if option.type !== undefined}
-							<PlanetCard planet={option} selectable={game.zone=='options'} on:click={()=>choosewrapper(option,'options')} on:tap={()=>choosewrapper(option,'options')}/>
-							<PlanetCard planet={{...option,settled:true}} selectable={game.zone=='options'} on:click={()=>choosewrapper(option,'options')} on:tap={()=>choosewrapper(option,'options')}/>
+							<PlanetCard planet={option} selectable={game.zone=='options'} on:click={f=>choosewrapper(option,'options')} on:tap={f=>choosewrapper(option,'options')}/>
+							<PlanetCard planet={{...option,settled:true}} selectable={game.zone=='options'} on:click={f=>choosewrapper(option,'options')} on:tap={f=>choosewrapper(option,'options')}/>
 						{:else}
-							<div class="pass {(game.zone=='options') ? ( (option.selected) ? 'selected' : 'selectable' ): 'bordered'}" on:click="{()=>choosewrapper(option,'options')}" on:tap="{()=>choosewrapper(option,'options')}">
+							<div class="pass {(game.zone=='options') ? ( (option.selected) ? 'selected' : 'selectable' ): 'bordered'}" on:click="{f=>choosewrapper(option,'options')}" on:tap="{f=>choosewrapper(option,'options')}">
 								{option.name}
 							</div>
 						{/if}
