@@ -2194,74 +2194,73 @@
 		{:else}
 			{#each game.players as player}
 				{#if game.players[game.acting_player_index]!==undefined && ((cltName==player.name && lobby.online) || (game.players[game.acting_player_index].id==player.id && !lobby.online)) }
-					
-						<div class="playerinfo bordered">
-							{#each game.players as p}
-								<div style="width:{100/game.number_of_players}%" class="flex player {(game.players[game.acting_player_index] !== undefined && p.name == game.players[game.acting_player_index].name) ? 'selectable' : 'bordered'}">
-									<div style="width:33%; text-align: center;"> Military Might {p.starfighters.small}</div>
-									<div style="width:33%; text-align: center;"> Galactic Influence {p.influence.length}</div>
-									<div style="width:33%; text-align: center;"> {p.name}</div>
-								</div>
-							{/each}<!-- <div style="width:100%; text-align: center;" class="bordered"> Remaining Influence throughout the Galaxy {game.influence.length}</div> -->
-						</div>
-						<!-- stacks / planets toggle -->
-						<div class="show" on:click={()=>toggle_center_or_planets()} on:tap={()=>toggle_center_or_planets()}>
-							show {(game.displayinfo.center_or_planets) ? "planets" : "center row"}
-						</div>
-						<div class="research" on:click={()=>toggle_research()} on:tap={()=>toggle_research()}>
-							show {(game.displayinfo.center_or_research) ? "research" : "center row"}
-						</div>
-						<!-- stacks -->
-						{#if game.displayinfo.selectionzone=='research' || !game.displayinfo.center_or_research}
-							<div class="zone researchrow">
-								{#each game.research_deck as card (card.id)}
-									<Card on:click="{()=>choosewrapper(card,'research')}" on:tap="{()=>choosewrapper(card,'research')}" selectable={(game.displayinfo.selectionzone=='research')} {card}/>
-								{/each}
+					<div class="playerinfo bordered">
+						{#each game.players as p}
+							<div style="width:{100/game.number_of_players}%" class="flex player {(game.players[game.acting_player_index] !== undefined && p.name == game.players[game.acting_player_index].name) ? 'selectable' : 'bordered'}">
+								<div style="width:33%; text-align: center;"> Military Might {p.starfighters.small}</div>
+								<div style="width:33%; text-align: center;"> Galactic Influence {p.influence.length}</div>
+								<div style="width:33%; text-align: center;"> {p.name}</div>
 							</div>
-						{:else if game.displayinfo.center_or_planets}
-							<div class="flex zone centerrow">
-								{#each game.stacks.rolecards as card (card.name)}
-									<Card {card} selectable={game.displayinfo.selectionzone=='rolecards'} pilecount="{game.stacks.pilecount[card.type]}" on:click="{()=>choosewrapper(card,'rolecards')}" on:tap="{()=>choosewrapper(card,'rolecards')}" on:touchmove="{(event)=>move(event, '/images/'+card.type+'.png','rolecards')}" on:touchstart="{(event)=>drag(event,card,'rolecards')}" on:touchend="{(event)=>drop(event,'rolecards')}"/>
-								{/each}
-							</div>
-						{/if}
-						{#if !game.displayinfo.center_or_planets}
-							<div class="flex zone centerrow">
-								{#each player.unsettled_planets as planet (planet.id)}
-									<PlanetCard planet={planet} on:click={()=>choosewrapper(planet,'unsettled_planets')} on:tap={()=>choosewrapper(planet,'unsettled_planets')}/>
-								{/each}
-								{#each [...player.settled_planets, ...player.conquered_planets] as planet (planet.id)}
-									<PlanetCard planet={planet} selected={game.displayinfo.selectionzone=='settled_&_conquered_planets'} on:click={()=>choosewrapper(planet,'settled_&_conquered_planets')} on:tap={()=>choosewrapper(planet,'settled_&_conquered_planets')} />
-								{/each}
-							</div>
-						{/if}
-						<!-- played cards-->
-						<div id="playedcards" class="flex zone playedcards" >
-							<div style="margin-right:auto" class="selectable pass" 
-								on:click={(game.displayinfo.showoptiontoskip)?()=>choose([{name:'Skip'}]):()=>{}}
-								on:tap={(game.displayinfo.showoptiontoskip)?()=>choose([{name:'Skip'}]):()=>{}}>
-								{(game.displayinfo.showoptiontoskip)?'[Choose None]':'[______]'}
-							</div>
-							{#each game.players[game.acting_player_index].limbo as card (card.id)}
-								<Card mini={true} on:click={()=>unchoose(card)} on:tap={()=>unchoose(card)} {card}/>
+						{/each}
+					</div>
+					<!-- stacks / planets toggle -->
+					<div class="show" on:click={toggle_center_or_planets}>
+						show {(game.displayinfo.center_or_planets) ? "planets" : "center row"}
+					</div>
+					<div class="research" on:click={toggle_research}>
+						show {(game.displayinfo.center_or_research) ? "research" : "center row"}
+					</div>
+					<!-- stacks -->
+					{#if game.displayinfo.selectionzone=='research' || !game.displayinfo.center_or_research}
+						<div class="zone researchrow">
+							{#each game.research_deck as card (card.id)}
+								<Card on:click={()=>choosewrapper(card,'research')} selectable={(game.displayinfo.selectionzone=='research')} {card}/>
 							{/each}
-							<div style="margin-left:auto" class="selectable pass" 
-								on:click={(game.passp)?()=>pass_priority():(game.passt)?()=>pass_turn():(game.displayinfo.alwMulti && game.choices.length>0)?()=>choose(game[game.displayinfo.choicelabel]):()=>{}}
-								on:tap={(game.passp)?()=>pass_priority():(game.passt)?()=>pass_turn():(game.displayinfo.alwMulti && game.choices.length>0)?()=>choose(game[game.displayinfo.choicelabel]):()=>{}}>
-								{(game.passp)?'[Pass to <br> Next Player]':(game.passt)?'[End Turn]':(game.displayinfo.alwMulti && game.choices.length>0)?'[Choose Selected]':'[______]'}
-							</div>
 						</div>
-						<div class="messagetoplayer bordered">{game.messagetoplayer[game.messagetoplayer.length-1]}</div>
-						<!-- hand -->
-						<div class="flex zone ownedcards">
-							<div class='bordered deck'>{player.deck.length}</div>
-							<div class='hand'>
-								{#each player.hand as card (card.id)}
-									<Card card={card} mini={true} selectable={game.displayinfo.selectionzone=='hand'} on:touchstart={(event)=>drag(event, card,'hand')} on:touchend={(event)=>drop(event,'hand')} on:touchmove={(event)=>move(event, card.imgurl,'hand')} on:click={()=>{log(card);choosewrapper(card,'hand');}} on:tap={()=>choosewrapper(card,'hand')} />
-								{/each}
-							</div>
-							<div class="bordered discard">{player.discard.length}</div>
+					{:else if game.displayinfo.center_or_planets}
+						<div class="flex zone centerrow">
+							{#each game.stacks.rolecards as card (card.name)}
+								<Card {card} selectable={game.displayinfo.selectionzone=='rolecards'} pilecount="{game.stacks.pilecount[card.type]}" on:click="{()=>choosewrapper(card,'rolecards')}" on:tap="{()=>choosewrapper(card,'rolecards')}" on:touchmove="{(event)=>move(event, '/images/'+card.type+'.png','rolecards')}" on:touchstart="{(event)=>drag(event,card,'rolecards')}" on:touchend="{(event)=>drop(event,'rolecards')}"/>
+							{/each}
 						</div>
+					{/if}
+					{#if !game.displayinfo.center_or_planets}
+						<div class="flex zone centerrow">
+							{#each player.unsettled_planets as planet (planet.id)}
+								<PlanetCard planet={planet} on:click={()=>choosewrapper(planet,'unsettled_planets')} on:tap={()=>choosewrapper(planet,'unsettled_planets')}/>
+							{/each}
+							{#each [...player.settled_planets, ...player.conquered_planets] as planet (planet.id)}
+								<PlanetCard planet={planet} selected={game.displayinfo.selectionzone=='settled_&_conquered_planets'} on:click={()=>choosewrapper(planet,'settled_&_conquered_planets')} on:tap={()=>choosewrapper(planet,'settled_&_conquered_planets')} />
+							{/each}
+						</div>
+					{/if}
+					<!-- played cards-->
+					<div id="playedcards" class="flex zone playedcards" >
+						<div style="margin-right:auto" class="selectable pass" 
+							on:click={(game.displayinfo.showoptiontoskip)?()=>choose([{name:'Skip'}]):()=>{}}
+							on:tap={(game.displayinfo.showoptiontoskip)?()=>choose([{name:'Skip'}]):()=>{}}>
+							{(game.displayinfo.showoptiontoskip)?'[Choose None]':'[______]'}
+						</div>
+						{#each game.players[game.acting_player_index].limbo as card (card.id)}
+							<Card mini={true} on:click={()=>unchoose(card)} on:tap={()=>unchoose(card)} {card}/>
+						{/each}
+						<div style="margin-left:auto" class="selectable pass" 
+							on:click={(game.passp)?()=>pass_priority():(game.passt)?()=>pass_turn():(game.displayinfo.alwMulti && game.choices.length>0)?()=>choose(game[game.displayinfo.choicelabel]):()=>{}}
+							on:tap={(game.passp)?()=>pass_priority():(game.passt)?()=>pass_turn():(game.displayinfo.alwMulti && game.choices.length>0)?()=>choose(game[game.displayinfo.choicelabel]):()=>{}}>
+							{(game.passp)?'[Pass to <br> Next Player]':(game.passt)?'[End Turn]':(game.displayinfo.alwMulti && game.choices.length>0)?'[Choose Selected]':'[______]'}
+						</div>
+					</div>
+					<div class="messagetoplayer bordered">{game.messagetoplayer[game.messagetoplayer.length-1]}</div>
+					<!-- hand -->
+					<div class="flex zone ownedcards">
+						<div class='bordered deck'>{player.deck.length}</div>
+						<div class='hand'>
+							{#each player.hand as card (card.id)}
+								<Card card={card} mini={true} selectable={game.displayinfo.selectionzone=='hand'} on:touchstart={(event)=>drag(event, card,'hand')} on:touchend={(event)=>drop(event,'hand')} on:touchmove={(event)=>move(event, card.imgurl,'hand')} on:click={()=>{log(card);choosewrapper(card,'hand');}} on:tap={()=>choosewrapper(card,'hand')} />
+							{/each}
+						</div>
+						<div class="bordered discard">{player.discard.length}</div>
+					</div>
 				{/if}
 			{/each}
 			<!-- game.options -->
