@@ -2115,8 +2115,7 @@
 		justify-content: flex-start;
 	}
 	.bordered{
-		border: solid #000;
-		border-width: 1px;
+		border: 1px solid #000;
 	}
 	::-webkit-scrollbar { 
 		display: none;  
