@@ -692,7 +692,7 @@
 			},
 			subchoices: [],
 			influence: [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
-			messagetoplayer: ['Waiting for other players to join'],
+			msgtoplayer: ['Waiting for other players to join'],
 			options: [],
 			planet_deck: [],
 			curPhs: -4,
@@ -1671,7 +1671,7 @@
 		}
 		if (game.nextphase !== endgame){
 			game.nextphase = nextphase;
-			game.messagetoplayer.push(msg);
+			game.msgtoplayer.push(msg);
 		}
 		
 		if (send) sendstate();
@@ -1744,7 +1744,7 @@
 					game.zone='rolecards';
 					game.displayinfo.alwMulti=false;
 					game.displayinfo.showoptiontoskip=false;
-					game.messagetoplayer.push('choose a card from the center row to add to your hand');
+					game.msgtoplayer.push('choose a card from the center row to add to your hand');
 					document.addEventListener('choicemade',callbackwrapper);
 					present_as_choice(game.stacks.rolecards);
 				},
@@ -1994,7 +1994,7 @@
 		align-items: center;
 		display: flex;
 	}
-	.messagetoplayer{
+	.msgtoplayer{
 		text-align: center;
 		background: rgb(80,80,80);
 		border-radius: 5vh;
@@ -2242,7 +2242,7 @@
 							{(game.passp)?'[Pass to <br> Next Player]':(game.passt)?'[End Turn]':(game.displayinfo.alwMulti && game.choices.length>0)?'[Choose Selected]':'[______]'}
 						</div>
 					</div>
-					<div class="messagetoplayer bordered">{game.messagetoplayer[game.messagetoplayer.length-1]}</div>
+					<div class="msgtoplayer bordered">{game.msgtoplayer[game.msgtoplayer.length-1]}</div>
 					<!-- hand -->
 					<div class="flex zone ownedcards">
 						<div class='bordered deck'>{player.deck.length}</div>
