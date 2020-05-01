@@ -689,8 +689,8 @@
 			maaxPlyrs: 4,
 			passtoplayer: false,
 			nonce: 0,
+			zone: "",
 			displayinfo: {
-				selectionzone: "",
 				dragged: null,
 				showoptiontoskip: false,
 				alwMulti: false,
@@ -873,7 +873,7 @@
 					...getLeadCorePhases(),
 					{
 					"Pass the device to the Next Player": () => {
-						game.displayinfo.selectionzone = "";
+						game.zone = "";
 						game.passp = true;
 					}
 					},
@@ -953,7 +953,7 @@
 					...getFollowCorePhases(),
 					{
 					"Pass the device to the Next Player": () => {
-						game.displayinfo.selectionzone = "";
+						game.zone = "";
 						game.passp = true;
 					}
 					},
@@ -1100,7 +1100,7 @@
 					},
 					{
 					"Pass the device to the Next Player": () => {
-						game.displayinfo.selectionzone = "";
+						game.zone = "";
 						game.displayinfo.showoptiontoskip = false;
 						game.displayinfo.alwMulti = false;
 						game.passp = false;
@@ -1180,7 +1180,7 @@
             displayPlanets = () => game.displayinfo.center_or_planets = false,
             displayCenter = () => game.displayinfo.center_or_planets = true,
             clearChoices = () => game[game.displayinfo.choicelabel] = [],
-            setDisplayInfo = (zone,multiple,skippable,label) => game.displayinfo = {...game.displayinfo,...{selectionzone:zone,alwMulti:multiple,showoptiontoskip:skippable,choicelabel:label}},
+            setDisplayInfo = (zone,multiple,skippable,label) => game.displayinfo = {...game.displayinfo,...{zone:zone,alwMulti:multiple,showoptiontoskip:skippable,choicelabel:label}},
             getAllCards = (plyr) => [...plyr.deck,...plyr.discard, ...plyr.limbo, ...plyr.hand],
             isPlanet = (p) => p.type=='planet' || p.type=='fertile' || p.type=='metallic' || p.type=='advanced',
             chkForPerm = (perm) => getActPlyr().permanents.filter( (el)=>el.type==perm ).length != 0,
@@ -1189,7 +1189,7 @@
             produceTradeHelper = (filled,planets,resources,func=()=>{}) => { let prd = {blue:0,green:0,purple:0,red:0}; planets.forEach((planet) =>  planet.production_zones.forEach((zone)=>{     if (!zone.filled && resources > 0) {         zone.filled = filled;         prd[zone.type]++;         resources--;         func()     }  }) );return prd;};
 	
 	let choosewrapper = (c,zone) => {
-		if ((game.displayinfo.selectionzone == zone) && offlineOrIsClientTurn()){
+		if ((game.zone == zone) && offlineOrIsClientTurn()){
 			(game.displayinfo.alwMulti) ? multiplechoose(c) : choose([c]);
 		}
 	};
@@ -1229,7 +1229,7 @@
 	let offer = (
 		skippable /*option to skip | sets game.displayinfo.showoptiontoskip=boolean */,
 		multiple /*allows multiple choices | sets game.displayinfo.alwMulti=boolean */, 
-		[field_label, choices] /* available cards to choose from | game.displayinfo.selectionzone={'hand|discard|options|planets|research|rolecards'}, sets choices=array if specified*/, 
+		[field_label, choices] /* available cards to choose from | game.zone={'hand|discard|options|planets|research|rolecards'}, sets choices=array if specified*/, 
 		choice_label /* label for where the choice is stored | set with game[label]=*/,
 		callback /*callback that handles the choice or finishes the phase*/, 
 	) => {
@@ -1611,7 +1611,7 @@
 	};
 	//offer_to_boost present_as_choice, choose, boost
 	let offer_to_boost = (player) => {
-		game.displayinfo.selectionzone = 'hand';
+		game.zone = 'hand';
 		game.displayinfo.alwMulti = true;
 		game.displayinfo.showoptiontoskip = true;
 		present_as_choice(player.hand);
@@ -1749,7 +1749,7 @@
 						callback();
 					};	
 					game.displayinfo.center_or_planets=true;
-					game.displayinfo.selectionzone='rolecards';
+					game.zone='rolecards';
 					game.displayinfo.alwMulti=false;
 					game.displayinfo.showoptiontoskip=false;
 					game.messagetoplayer.push('choose a card from the center row to add to your hand');
@@ -1846,7 +1846,7 @@
 		game.passtoplayer = !game.passtoplayer;
 		openFullscreen();
 	};
-	let class_gen = (zone, item) => (game.displayinfo.selectionzone==zone) ? ((item.selected) ? "selected" : "selectable" )  : "bordered";
+	let class_gen = (zone, item) => (game.zone==zone) ? ((item.selected) ? "selected" : "selectable" )  : "bordered";
 	
 	let gen_game_id = () => {
 		game.game_id ='';
@@ -2211,16 +2211,16 @@
 						show {(game.displayinfo.center_or_research) ? "research" : "center row"}
 					</div>
 					<!-- stacks -->
-					{#if game.displayinfo.selectionzone=='research' || !game.displayinfo.center_or_research}
+					{#if game.zone=='research' || !game.displayinfo.center_or_research}
 						<div class="zone researchrow">
 							{#each game.research_deck as card (card.id)}
-								<Card on:click={()=>choosewrapper(card,'research')} selectable={(game.displayinfo.selectionzone=='research')} {card}/>
+								<Card on:click={()=>choosewrapper(card,'research')} selectable={(game.zone=='research')} {card}/>
 							{/each}
 						</div>
 					{:else if game.displayinfo.center_or_planets}
 						<div class="flex zone centerrow">
 							{#each game.stacks.rolecards as card (card.name)}
-								<Card {card} selectable={game.displayinfo.selectionzone=='rolecards'} pilecount="{game.stacks.pilecount[card.type]}" on:click="{()=>choosewrapper(card,'rolecards')}" on:tap="{()=>choosewrapper(card,'rolecards')}" on:touchmove="{(event)=>move(event, '/images/'+card.type+'.png','rolecards')}" on:touchstart="{(event)=>drag(event,card,'rolecards')}" on:touchend="{(event)=>drop(event,'rolecards')}"/>
+								<Card {card} selectable={game.zone=='rolecards'} pilecount="{game.stacks.pilecount[card.type]}" on:click="{()=>choosewrapper(card,'rolecards')}" on:tap="{()=>choosewrapper(card,'rolecards')}" on:touchmove="{(event)=>move(event, '/images/'+card.type+'.png','rolecards')}" on:touchstart="{(event)=>drag(event,card,'rolecards')}" on:touchend="{(event)=>drop(event,'rolecards')}"/>
 							{/each}
 						</div>
 					{/if}
@@ -2230,7 +2230,7 @@
 								<PlanetCard planet={planet} on:click={()=>choosewrapper(planet,'unsettled_planets')} on:tap={()=>choosewrapper(planet,'unsettled_planets')}/>
 							{/each}
 							{#each [...player.settled_planets, ...player.conquered_planets] as planet (planet.id)}
-								<PlanetCard planet={planet} selected={game.displayinfo.selectionzone=='settled_&_conquered_planets'} on:click={()=>choosewrapper(planet,'settled_&_conquered_planets')} on:tap={()=>choosewrapper(planet,'settled_&_conquered_planets')} />
+								<PlanetCard planet={planet} selected={game.zone=='settled_&_conquered_planets'} on:click={()=>choosewrapper(planet,'settled_&_conquered_planets')} on:tap={()=>choosewrapper(planet,'settled_&_conquered_planets')} />
 							{/each}
 						</div>
 					{/if}
@@ -2256,7 +2256,7 @@
 						<div class='bordered deck'>{player.deck.length}</div>
 						<div class='hand'>
 							{#each player.hand as card (card.id)}
-								<Card card={card} mini={true} selectable={game.displayinfo.selectionzone=='hand'} on:touchstart={(event)=>drag(event, card,'hand')} on:touchend={(event)=>drop(event,'hand')} on:touchmove={(event)=>move(event, card.imgurl,'hand')} on:click={()=>{log(card);choosewrapper(card,'hand');}} on:tap={()=>choosewrapper(card,'hand')} />
+								<Card card={card} mini={true} selectable={game.zone=='hand'} on:touchstart={(event)=>drag(event, card,'hand')} on:touchend={(event)=>drop(event,'hand')} on:touchmove={(event)=>move(event, card.imgurl,'hand')} on:click={()=>{log(card);choosewrapper(card,'hand');}} on:tap={()=>choosewrapper(card,'hand')} />
 							{/each}
 						</div>
 						<div class="bordered discard">{player.discard.length}</div>
@@ -2264,14 +2264,14 @@
 				{/if}
 			{/each}
 			<!-- game.options -->
-			{#if game.displayinfo.selectionzone=='options'}
+			{#if game.zone=='options'}
 				<div class="{( game.options[0] !== undefined && game.options[0].type !== undefined) ? 'talloptions' : 'options'}">
 					{#each game.options as option (option.name)}
 						{#if option.type !== undefined}
-							<PlanetCard planet={option} selectable={game.displayinfo.selectionzone=='options'} on:click={()=>choosewrapper(option,'options')} on:tap={()=>choosewrapper(option,'options')}/>
-							<PlanetCard planet={{...option,settled:true}} selectable={game.displayinfo.selectionzone=='options'} on:click={()=>choosewrapper(option,'options')} on:tap={()=>choosewrapper(option,'options')}/>
+							<PlanetCard planet={option} selectable={game.zone=='options'} on:click={()=>choosewrapper(option,'options')} on:tap={()=>choosewrapper(option,'options')}/>
+							<PlanetCard planet={{...option,settled:true}} selectable={game.zone=='options'} on:click={()=>choosewrapper(option,'options')} on:tap={()=>choosewrapper(option,'options')}/>
 						{:else}
-							<div class="pass {(game.displayinfo.selectionzone=='options') ? ( (option.selected) ? 'selected' : 'selectable' ): 'bordered'}" on:click="{()=>choosewrapper(option,'options')}" on:tap="{()=>choosewrapper(option,'options')}">
+							<div class="pass {(game.zone=='options') ? ( (option.selected) ? 'selected' : 'selectable' ): 'bordered'}" on:click="{()=>choosewrapper(option,'options')}" on:tap="{()=>choosewrapper(option,'options')}">
 								{option.name}
 							</div>
 						{/if}
