@@ -1905,7 +1905,9 @@
 		background:#505050;
 		display:flex;
 		border:.5px solid #319eb1;
-		z-index:2
+		z-index:2;
+		align-items:center;
+		justify-content: center;
 	}
 	.research{
 		border-radius:50% 0 0 50%;
@@ -1969,7 +1971,9 @@
 		height:50px;
 		min-width:200px;
 		background:#505050;
-		display:flex
+		display:flex;
+		align-items:center;
+		justify-content: center;
 	}
 	.msgtoplayer{
 		text-align:center;
@@ -1988,7 +1992,8 @@
 		border-width:1px
 	}
 	.flex{
-		display:flex
+		display:flex;
+		justify-content:center;
 	}
 	.playerinfo{
 		display:flex;
@@ -2032,7 +2037,9 @@
 		background-repeat:no-repeat;
 		text-align:center;
 		display:flex;
-		font-size:6vh
+		font-size:6vh;
+		align-items:center;
+		justify-content: center;
 	}
 	.deck{
 		margin-right:auto;
@@ -2081,7 +2088,8 @@
 		border:none;
 		color:#319eb1;
 		padding:0;
-		margin:0
+		margin:0;
+		margin-top:12vh;
 	}
 	.passtoplayer{
 		height:80%;
