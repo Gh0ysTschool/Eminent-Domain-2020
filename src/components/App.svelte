@@ -1934,13 +1934,12 @@
 		box-shadow:inherit
 	}
 	.stars:before{
+		animation:fade1 3s linear infinite;
 		transform:translateZ(-300px)
 	}
 	.stars:after{
+		animation:fade2 3s linear infinite;
 		transform:translateZ(-600px)
-	}
-	.stars:after,.stars:before{
-		animation:fade2 3s linear infinite
 	}
 	@keyframes fly{
 		from{
