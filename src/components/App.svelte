@@ -1689,7 +1689,7 @@
 					func=jsobj[key];
 				}
 				item[key] = f=>{
-					if (wrapperf=>){
+					if (wrapperfunction){
 						func();
 					} else {
 						finish();
@@ -1934,7 +1934,7 @@
 	.stars:before{
 		transform:translateZ(-300px)
 	}
-	.stars:after,{
+	.stars:after{
 		transform:translateZ(-600px)
 	}
 	.stars:after,.stars:before{
@@ -2004,17 +2004,13 @@
 		background-size:cover
 	}
 	.options,.talloptions{
-		background-image:url(/images/embackground.png);
-		background-repeat:no-repeat;
+		justify-content:center;
 		display:flex;
 		right:10%;
-		top:50%;
-		height:15%;
+		top:55vh;
 		width:80%;
-		font-size:150%
-	}
-	.talloptions{
-		height:30%
+		font-size:150%;
+		border-radius:5vh;
 	}
 	.ownedcards{
 		display:flex;
@@ -2129,7 +2125,7 @@
 		{:else}
 			{#each game.players as player}
 				{#if game.players[game.actPlyrIndx]!==undefined && ((cltName==player.name && lobby.online) || (game.players[game.actPlyrIndx].id==player.id && !lobby.online)) }
-					<div class="playerinfo bordered">
+					<div class="playerinfo">
 						{#each game.players as p}
 							<div style="width:{100/game.number_of_players}%" class="flex player {(game.players[game.actPlyrIndx] !== undefined && p.name == game.players[game.actPlyrIndx].name) ? 'selectable' : 'bordered'}">
 								<div style="width:33%; text-align: center;"> Military Might {p.starfighters.small}</div>
