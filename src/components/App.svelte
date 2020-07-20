@@ -2188,7 +2188,7 @@
 						{/each}
 						<div style="margin-left:auto" class="selectable pass" 
 							on:click={(game.passp)?f=>pass_priority():(game.passt)?f=>pass_turn():(game.alwMulti && game.choices.length>0)?f=>choose(game[game.choicelabel]):f=>{}}>
-							{(game.passp)?'[Pass to <br> Next Player]':(game.passt)?'[End Turn]':(game.alwMulti && game.choices.length>0)?'[Choose Selected]':'[______]'}
+							{(game.passp)?'[Pass to Next Player]':(game.passt)?'[End Turn]':(game.alwMulti && game.choices.length>0)?'[Choose Selected]':'[______]'}
 						</div>
 					</div>
 					<div class="msgtoplayer bordered">{game.msgtoplayer[game.msgtoplayer.length-1]}</div>
