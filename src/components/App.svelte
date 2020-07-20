@@ -677,7 +677,7 @@
 		let nonce = 0;
 		game = {
 			minPlyrs: 2,
-			maaxPlyrs: 4,
+			maxPlyrs: 4,
 			passtoplayer: false,
 			nonce: 0,
 			zone: "",
@@ -1118,7 +1118,7 @@
 					genEmptyCard("research","Research",{research:1},{research_deck: []}),
 				]
 			}
-		};
+		};	
 			let url = location.origin.replace(/^http/, "ws"); 
 			lobby = {
 				url: url,
@@ -1191,7 +1191,14 @@
 			}
 		}
 	};
-	let choose = (choices) => offlineOrIsClientTurn() && clearOptions() && resetSelection(choices) && setChoice(choices) && finish();
+	let choose = (choices) => {
+		if (offlineOrIsClientTurn()){
+			clearOptions();
+			resetSelection(choices);
+			setChoice(choices);
+			finish();
+		}
+	}
 	let unchoose = (choice) => {
 		if (offlineOrIsClientTurn()){
 			if ( game[game.choicelabel].includes(choice) ) {
@@ -1683,13 +1690,11 @@
 		for (let i in source_array){
 			if (wrapperfunction){
 				let jsobj = source_array[i];
-				let func,key;
-				let item = {};
-				for (key in jsobj){
+				let func,key,item = {};
+				for (key in jsobj)
 					func=jsobj[key];
-				}
 				item[key] = f=>{
-					if (wrapperfunction){
+					if (wrapperfunction()){
 						func();
 					} else {
 						finish();
@@ -2192,7 +2197,7 @@
 						<div class='bordered deck'>{player.deck.length}</div>
 						<div class='hand'>
 							{#each player.hand as card (card.id)}
-								<Card card={card} mini={true} selectable={game.zone=='hand'} on:touchstart={(event)=>drag(event, card,'hand')} on:touchend={(event)=>drop(event,'hand')} on:touchmove={(event)=>move(event, card.imgurl,'hand')} on:click={f=>{log(card);choosewrapper(card,'hand');}}/>
+								<Card card={card} mini={true} selectable={game.zone=='hand'} on:touchstart={(event)=>drag(event, card,'hand')} on:touchend={(event)=>drop(event,'hand')} on:touchmove={(event)=>move(event, card.imgurl,'hand')} on:click={f=>{choosewrapper(card,'hand');}}/>
 							{/each}
 						</div>
 						<div class="bordered discard">{player.discard.length}</div>
