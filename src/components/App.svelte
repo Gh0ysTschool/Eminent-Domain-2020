@@ -1384,6 +1384,7 @@
 			'available':true,
 			'rounds':0,
 			'limbo': [],
+			'exile':[],
 			'deck' : knuthshuffle(gennewdeck()),
 			'hand' : [],
 			'permanents' : [] ,
