@@ -6,7 +6,6 @@ import { onMount } from 'svelte';
     export let planet={name:" "}, selectable=false, mini=false;
 let key = {advanced:'adv', fertile:'fer', metallic:'met',}[planet.type];
     let color,bg,logoBg;
-    console.log(planet);
     onMount(()=>{
         color =  (key=='fer') ? 'rgb(148, 197, 152)' : (key=='adv') ? 'rgb(231, 184, 215)' : 'rgb(187, 55, 55)';
         bg = `color:${color};background:radial-gradient(circle at 50% 33%, ${color}, rgb(80,80,80) 30%)`
