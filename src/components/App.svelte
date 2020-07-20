@@ -1236,12 +1236,13 @@
 		let toRemove = source_array.find(e=> id == e.id);
 		destination_array = [...destination_array,toRemove];
 		source_array = source_array.filter(e=> e.id != toRemove.id);
+		return [source_array,destination_array];
 	};
 	//draw deck->hand
 	let totalinfluence = f=> {
 		game.players.forEach((plyr) => {
 			plyr.influence = plyr.influence.reduce((acc,cur) => acc + cur,0) + getAllCards(plyr).reduce((acc,cur) => acc + cur.influence);
-		}) ;
+		});
 	};
 	let endgame = f=> {
 		//display victor
@@ -1495,7 +1496,7 @@
 			plyr.discard = [...plyr.discard, ...planet.hosted_colonies];
 			planet.hosted_colonies = [];
 			planet.settled = true;
-			discard(plyr.unsettled_planets,plyr.settled_planets,planet.id);
+			[plyr.unsettled_planets,plyr.settled_planets] = discard(plyr.unsettled_planets,plyr.settled_planets,planet.id);
 		}
 		
 	};
@@ -1628,10 +1629,10 @@
 		game.options = [...game.options,planet];
 	};
 	let catalog_planet = (player) => {
-		game.choices[0].finDest = 'unsetttled';
+		game.choices[0].finDest = 'unsetttled_planets';
 		player.unsettled_planets = [...player.unsettled_planets,game.choices[0]];
 		player.limbo = player.limbo.filter(p=>p.id!=game.choices[0].id);
-		player.limbo.filter(card => card.finDest=='planetdeck').forEach(planet=> discard(player.limbo,game.planet_deck,planet.id))
+		player.limbo.filter(card => card.finDest=='planetdeck').forEach(planet=> [player.limbo, game.planet_deck] = discard(player.limbo,game.planet_deck,planet.id));
 	};
 	let followcentercardrole = (choices, callback=null) => {
 		let card = choices[0];
@@ -1647,7 +1648,7 @@
 	};
 	let discardcardsfromhand = (choices, callback=null) => {
 		if(choices[0].name!="Skip"){
-			choices.forEach(card=>discard(getActPlyr().hand, getActPlyr().discard, card.id));
+			choices.forEach(card=>[getActPlyr().hand,getActPlyr().discard] = discard(getActPlyr().hand, getActPlyr().discard, card.id));
 		}
 		let [,,...arr] = arguments;
 		callback(choices,arr);
