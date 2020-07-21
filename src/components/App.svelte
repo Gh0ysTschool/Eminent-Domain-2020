@@ -20,7 +20,7 @@
 						["Settle Colonies"],
 					),
 					genActionPhase( "Settling your Planet", ["colonize"],
-						f=> settle_colonies(getSubChoice(),getActPlyr()),
+						f=> {settle_colonies(getSubChoice(),getActPlyr()); finish(!0)},
 						["Settle Colonies"]
 					),
 					genActionPhase( "Choose an Unsettled Planet to Colonize", ["colonize"],
@@ -28,7 +28,7 @@
 						["Colonize"],
 					),
 					genActionPhase( "Colonizing your Planet", ["colonize"],
-						f=> { colonize(getSubChoice(),getActPlyr().limbo,getActPlyr().limbo.filter(el => el.type == "colonize")[0]); finish(true);},
+						f=> { colonize(getSubChoice(),'limbo',{type:'colonize'}); finish(true);},
 						["Colonize"],
 					),
 				],
@@ -51,9 +51,7 @@
 					genLeadPhase( "Colonizing your Planet", ["colonize"],
 						f=> {
 							if (getSubChoice().name == "Skip") finish();
-							let planet = getSubChoice();
-							if (planet.hosted_colonies.reduce( (acc, cur) => acc + cur.icons.colonize,0) >= planet.settle_cost)
-								colonize( planet, getActPlyr().limbo,getActPlyr().limbo.filter(el => el.type == "colonize")[0]);
+							colonize( getSubChoice(), 'limbo',{type:'colonize'},true);
 							finish(true);
 						},
 						["Colonize"],
@@ -82,8 +80,7 @@
 					),
 					genFollowPhase( "Colonizing your Planet", ["colonize"],
 						f=> {
-							let planet = getSubChoices().find((planet)=>planet.hosted_colonies.reduce((acc, cur) => acc + cur.icons.colonize ) >= planet.settle_cost);
-							colonize( planet, getActPlyr().limbo,getActPlyr().limbo.filter(el => el.type == "colonize")[0]);
+							colonize( getSubChoice(), 'limbo',{type:'colonize'},true);
 							finish(true);
 						},
 						["Colonize"],
@@ -432,7 +429,7 @@
 			genActionPhase(
 				"Colonizing your Planet",
 				["improved_colonize"],
-				f=> { colonize( getSubChoice(), getActPlyr().limbo, getActPlyr().limbo.filter(el => el.type == "improved_colonize")[0]); finish(true);},
+				f=> { colonize( getSubChoice(), 'limbo', {type:"improved_colonize"}); finish(true);},
 				["Colonize"],
 				),
 			// #######################################################################################################################################################################################
@@ -567,10 +564,8 @@
 				"Terraforming your Planet",
 				["terraforming"],
 				f=> {
-					colonize( getChoice(), getActPlyr().limbo, getActPlyr().limbo.filter(el => el.type == "terraforming")[0]);
-					if (getChoice().hosted_colonies.length > 0) {
-						let c = getChoice().hosted_colonies.reduce((acc, cur) => acc + cur.icons.colonize,0);
-						if (c >= getChoice().settle_cost) settle_colonies(getChoice(),getActPlyr()); }
+					colonize( getChoice(), 'limbo', {type:"terraforming"});
+					settle_colonies(getChoice(),getActPlyr()); 
 					finish(true); },
 				["Colonize"]
 			),
@@ -1500,6 +1495,11 @@
 		}
 		
 	};
+
+	//TEST TEST TEST
+	window.logPlayer=()=>log(getActPlyr());
+	//TEST TEST TEST
+
 	//pass_turn leadingplayer->nextplayer
 	let pass_turn = f=> {
 		if (!lobby.online || cltName == getActPlyr().name ){
@@ -1562,13 +1562,16 @@
 	//survey deck->hand
 	let survey = (player) => player = draw(player,2);
 	//colonize hand/limbo->host
-	let colonize = (planet, source_array, card, isRole=false) => {
-		let l = (isRole) ? getActPlyr().bstIcons.colonize : 1;
+	let colonize = (planet, key, card, isRole=false) => {
+		let plyr = getActPlyr();
+		let l = (isRole) ? plyr.bstIcons.colonize : 1;
 		for (let i = 0; i < l; i++){
-			let toRemove = source_array.find(e=> card.type == e.type && e.finDest!='exile');
+			let toRemove = plyr[key].find(e=> card.type == e.type && e.finDest!='exile');
+			if (toRemove==undefined) continue;
 			planet.hosted_colonies = [...planet.hosted_colonies,toRemove];
-			source_array = source_array.filter((e,i) => e.id != toRemove.id);
+			plyr[key] = plyr[key].filter((e,i) => e.id != toRemove.id);
 		}
+		forcePlayerStateUpdate();
 	};
 	//warfare starship_pile->player_starship_pile
 	let warfare = (player) => player.starfighters.small++;
@@ -1895,6 +1898,7 @@
 		elem.msRequestFullscreen();
 		}
 	};
+	let forcePlayerStateUpdate = f=> game.players[game.actPlyrIndx] = getActPlyr();
 	
 </script>
 
